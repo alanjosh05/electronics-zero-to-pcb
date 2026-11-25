@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>19 · Ordering Your Board</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 19,
+  steps: [
+    { t: 'What the factory needs', chip: 'the files',
+      h: 'The factory doesn\'t open KiCad. It reads a small set of standard files.',
+      kid: 'Sending a cake order to a bakery: a picture of each layer, where the candles go, and a shopping list.',
+      body: `<p>For a <b>bare board</b>: <b>Gerber</b> files (one drawing per layer) + <b>drill</b> files (where holes go). JLCPCB's KiCad guide lists Gerbers, drill files and drill map files.{{jlc_gerb}}</p>
+             <p>For <b>factory assembly</b> you also send a <b>BOM</b> (bill of materials: which parts, with supplier part numbers) and a <b>CPL</b>/position file (where each part sits and how it's rotated).</p>`,
+      tiles: [ { i: '🗂️', l: 'Gerbers', s: 'each copper/mask/silk layer' }, { i: '🕳️', l: 'Drill file', s: 'hole positions & sizes' }, { i: '🧾', l: 'BOM', s: 'parts list (+ LCSC numbers)' }, { i: '📍', l: 'CPL / pos', s: 'X, Y, rotation per part' } ] },
+
+    { t: 'Export from KiCad', chip: 'how',
+      h: 'Plot Gerbers, generate drill files, zip, then look at them.',
+      kid: 'Before posting a letter, read it once more out loud.',
+      body: `<p>Follow your factory's own KiCad guide. Each fab names its preferred settings.{{jlc_gerb}}</p>
+             <ol class="list-decimal pl-5 space-y-1"><li>PCB editor → File → Fabrication Outputs → Gerbers (Plot).</li><li>In the same dialog: Generate Drill Files.</li><li>Zip the folder.</li><li><b>Open the zip in KiCad's Gerber Viewer</b> (or the fab's online viewer). Check every layer looks right.</li></ol>`,
+      tiles: [ { i: '🖨️', l: 'Plot', s: 'Gerbers' }, { i: '🕳️', l: 'Drill', s: 'Excellon' }, { i: '🗜️', l: 'Zip', s: 'one file' }, { i: '👀', l: 'View', s: 'Gerber viewer' }, { i: '🛒', l: 'Upload', s: 'get a quote' } ], tilesFlow: true },
+
+    { t: 'Board options', chip: 'the order form',
+      h: 'The order form, decoded. The defaults are usually right.',
+      kid: 'Ordering a pizza: size, crust, toppings. Most people pick the standard one.',
+      body: `<p>Typical first-board choices: <b>2 layers, 1.6 mm FR4, 1 oz copper</b>, any mask colour, HASL (lead-free) finish. Fancier finishes (ENIG) are flatter and better for fine-pitch chips.</p>
+             <p>Your design must respect the fab's <b>capabilities</b>: minimum trace, spacing, hole sizes.{{jlc_cap}}</p>`,
+      compare: { good: { t: 'Hand-solder it yourself', items: ['cheapest', 'great practice (lesson 20)', 'fine with 0805 + SOT parts'] },
+                 bad: { t: 'Factory assembly (SMT)', items: ['needs BOM + CPL with stocked part numbers', 'check part rotations in preview', 'costs more, saves hours, handles tiny parts'] } } },
+
+    { t: 'Get it reviewed', chip: 'wisdom',
+      h: 'Get a second pair of eyes before you pay.',
+      kid: 'Ask a friend to read your essay before handing it in.',
+      body: `<p><b>r/PrintedCircuitBoard</b> reviews designs <i>before</i> you order. The title must contain "Review Request", and you post sharp images of your schematic and layers.{{r_pcb}} Read their wiki first.</p>
+             <p>Run through the <a class="underline font-bold" href="../reference/pcb-checklist.html">PCB checklist</a> before posting. Reviewers are generous to people who've clearly done the basics.</p>
+             <p>And you can always paste screenshots to me first.</p>`,
+      tiles: [ { i: '✅', l: 'Checklist', s: 'reference/pcb-checklist' }, { i: '🤖', l: 'Ask Claude', s: 'screenshots welcome' }, { i: '👥', l: 'r/PrintedCircuitBoard', s: '"Review Request"' }, { i: '🛒', l: 'Order', s: 'only after review' } ], tilesFlow: true },
+  ],
+  quiz: [
+    { q: 'Gerber files are…', o: ['the parts shopping list', 'drawings of each layer', 'the machine placement list'], a: 1, why: 'One Gerber per layer: copper, mask, silkscreen, outline.' },
+    { q: 'The CPL (position) file tells the machine…', o: ['where each part goes', 'how thick copper is', 'what solder mask colour'], a: 0, why: 'X/Y position and rotation of every SMD part, for assembly.' },
+    { q: 'Before paying for your first board you should…', o: ['make traces even thinner', 'delete the drill file', 'post a review request'], a: 2, why: 'Fresh eyes catch the mistakes you can\'t see anymore.' },
+    { q: 'Factory assembly needs a BOM with…', o: ['supplier part numbers', 'your phone number', 'hand drawn sketches'], a: 0, why: 'The fab must know exactly which stocked part to place (e.g. LCSC numbers).' },
+  ],
+  build: {
+    h: 'Export, inspect and quote your LED board.',
+    need: 'KiCad, your laid-out led-board (lesson 18)',
+    steps: [
+      'Export Gerbers + drill files following your fab\'s KiCad guide.',
+      'Open the zip in KiCad\'s Gerber Viewer. Toggle each layer: do the outline, copper, mask and silk look right?',
+      'Upload to a fab\'s quote page (no need to pay). Check its preview matches.',
+      'Go through the PCB checklist line by line.',
+      'Optional: order 5 boards. A tiny LED board is the perfect cheap first order.',
+    ],
+  },
+  cards: [
+    { name: 'Fab files', sub: 'what to send', color: 'bg-violet', use: 'every order.',
+      rules: 'bare board: Gerbers + drill · assembly: + BOM (with part numbers) + CPL · always view in a Gerber viewer · design within the fab\'s capabilities · review first. {{jlc_gerb}}' },
+  ],
+  source: { title: 'JLCPCB: How to generate Gerber and Drill files in KiCad', url: 'https://jlcpcb.com/help/article/how-to-generate-gerber-and-drill-files-in-kicad-9', note: 'Step-by-step screenshots of the exact export settings (same flow in KiCad 10).' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

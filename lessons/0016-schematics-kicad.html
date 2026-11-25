@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>16 · Schematics in KiCad</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 16,
+  steps: [
+    { t: 'A map, not a photo', chip: 'what it is',
+      h: 'A schematic is a map of what connects to what, not where parts sit.',
+      kid: "A subway map shows which stations connect. It doesn't show how far apart they really are on the streets.",
+      body: `<p>A <b>schematic</b> uses symbols and lines to show every electrical connection.{{sf_sch}} Where parts physically go comes later, in the PCB layout (lesson 18).</p>
+             <p>Everything you've built on a breadboard so far can be drawn as a schematic. From this lesson on, <b>the schematic is the source of truth</b> for your boards.</p>`,
+      tiles: [ { i: '🗺️', l: 'Schematic', s: 'what connects' }, { i: '🧩', l: 'Footprints', s: 'what it looks like' }, { i: '🛣️', l: 'Layout', s: 'where it goes' } ], tilesFlow: true },
+
+    { t: 'Symbols', chip: 'the alphabet',
+      h: 'Learn the alphabet: the symbols you already know as parts.',
+      kid: 'Road signs: once you know them, a glance tells you everything.',
+      body: `<p>Each symbol has a <b>reference</b> (R1, C3, D2, Q1, U1) and a <b>value</b> (220 Ω, 100 nF, AO3400…).{{sf_sch}}</p>
+             <p><b>Net labels</b> (e.g. "3V3", "SDA") connect points by name, with no wire needed. They keep big schematics readable.</p>`,
+      tiles: [ { i: '〰️', l: 'R · resistor', s: 'zigzag or box' }, { i: '⏸️', l: 'C · capacitor', s: 'two plates' }, { i: '▶|', l: 'D · diode', s: 'triangle + bar' }, { i: '🔺', l: 'Q · transistor', s: 'NPN, MOSFET' }, { i: '⏚', l: 'GND / power', s: 'ground & rails' }, { i: '🔲', l: 'U · chip', s: 'box with pins' } ] },
+
+    { t: 'KiCad workflow', chip: 'the pipeline',
+      h: 'KiCad\'s pipeline from idea to factory files.',
+      kid: 'Baking: write the recipe, check it, pick the tins, bake, inspect, then box it up.',
+      body: `<p><b>KiCad</b> is free, open-source and used by pros. Version 10 came out in March 2026.{{kicad10}} The official Getting Started guide walks the whole flow: schematic first, then <b>ERC</b>, then the board editor.{{kicad}}</p>
+             <p>We'll do each step across lessons 16–19.</p>`,
+      tiles: [ { i: '✏️', l: 'Schematic', s: 'lesson 16' }, { i: '✔️', l: 'ERC', s: 'lesson 16' }, { i: '🧩', l: 'Footprints', s: 'lesson 17' }, { i: '🛣️', l: 'Layout + DRC', s: 'lesson 18' }, { i: '📦', l: 'Gerbers', s: 'lesson 19' } ], tilesFlow: true },
+
+    { t: 'Good habits', chip: 'readable',
+      h: 'Draw it so future-you (and reviewers) can read it in 10 seconds.',
+      kid: 'Tidy handwriting: anyone can read your note, including you next week.',
+      body: `<p>Reviewers on r/PrintedCircuitBoard will judge your schematic before your layout.{{r_pcb}} Clean schematics catch bugs early.</p>`,
+      compare: { good: { t: 'Do', items: ['power at top, GND at bottom', 'signals flow left → right', 'net labels instead of spaghetti', 'group by function (power, MCU, sensors)', 'every part has a value', 'decoupling cap drawn next to its chip'] },
+                 bad: { t: "Don't", items: ['wires crossing everywhere', 'unnamed nets', 'parts with no values', 'hiding power pins'] } } },
+
+    { t: 'ERC', chip: 'spell-check',
+      h: 'ERC is the spell-checker for your schematic.',
+      kid: 'The red squiggly line under a misspelled word.',
+      body: `<p><b>Electrical Rules Check</b> finds unconnected pins, outputs fighting each other, and power inputs with nothing driving them.{{kicad}}</p>
+             <p>The classic beginner error: "<i>Input power pin not driven</i>". It happens when power comes from a connector KiCad can't "see" as a source. The fix is a <b>PWR_FLAG</b> symbol on that net. Read every warning, and fix or consciously accept each one.</p>`,
+      tiles: [ { i: '🔌', l: 'Unconnected pin', s: 'wire it or add a no-connect ✕' }, { i: '⚡', l: 'Power not driven', s: 'add PWR_FLAG' }, { i: '⚔️', l: 'Output vs output', s: 'real bug: fix it' } ] },
+  ],
+  quiz: [
+    { q: 'A schematic shows…', o: ['which pins connect', 'where parts sit', 'board outline size'], a: 0, why: 'Connections only. Placement is decided in the PCB layout.' },
+    { q: 'The right KiCad order is…', o: ['layout → ERC → schematic', 'schematic → ERC → layout', 'ERC → layout → schematic'], a: 1, why: 'Draw the schematic, pass ERC, then lay out the board.' },
+    { q: 'Net labels help by…', o: ['adding more power', 'checking part prices', 'replacing long wires'], a: 2, why: 'Same label = same net, so you don\'t need to draw the wire across the page.' },
+    { q: 'ERC says a power input pin is not driven. A common fix:', o: ['add a PWR_FLAG', 'delete the part', 'rotate the symbol'], a: 0, why: 'PWR_FLAG tells KiCad that power really does enter this net, e.g. from a connector.' },
+  ],
+  build: {
+    h: 'Draw your lesson 01 circuit in KiCad.',
+    need: 'KiCad 10 installed (free, kicad.org), the official Getting Started guide open',
+    steps: [
+      'New project "led-board". Open the schematic editor.',
+      'Place: a 2-pin connector (power in), R (220 Ω), LED, and GND + VCC power symbols.',
+      'Wire them: VCC → R → LED anode, LED cathode → GND. Give every part a value.',
+      'Add a PWR_FLAG on VCC and GND (power arrives from the connector).',
+      'Run ERC. Fix until it\'s clean. Screenshot it and show me!',
+      'Stretch: add the button + pull-up (lesson 09) and a 100 nF cap. Use net labels.',
+    ],
+  },
+  cards: [
+    { name: 'Schematic habits', sub: 'readable = reviewable', color: 'bg-violet', use: 'every board, before any layout.',
+      rules: 'power up, GND down, left→right flow · net labels · values on everything · decoupling caps next to their chip · ERC clean (PWR_FLAG where needed). {{kicad}}' },
+  ],
+  source: { title: 'KiCad docs: Getting Started in KiCad', url: 'https://docs.kicad.org/10.0/en/getting_started_in_kicad/getting_started_in_kicad.html', note: 'Do the tutorial\'s schematic part now; the board part goes with lessons 17–18.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

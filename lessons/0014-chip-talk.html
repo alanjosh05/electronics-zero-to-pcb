@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>14 · How Chips Talk</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 14,
+  steps: [
+    { t: 'Protocols', chip: 'the idea',
+      h: 'Chips talk in agreed patterns of HIGH and LOW, called protocols.',
+      kid: 'Morse code: just dots and dashes, but both people must know the same code.',
+      body: `<p>Sensors, displays, memory and radios send data to your microcontroller as fast streams of 1s and 0s. A <b>protocol</b> is the agreed rulebook: which wire carries what, and when.</p>
+             <p>Four you'll meet on nearly every board:</p>`,
+      tiles: [ { i: '📞', l: 'UART', s: '2 wires · point to point' }, { i: '🏫', l: 'I²C', s: '2 wires · many chips, addresses' }, { i: '🏎️', l: 'SPI', s: '4+ wires · fast' }, { i: '🎙️', l: 'I²S', s: '3 wires · audio' } ] },
+
+    { t: 'UART', chip: 'two tin cans',
+      h: 'UART: two wires, crossed. My TX goes to your RX.',
+      kid: 'Two tin-can phones: my talking can goes to your listening ear, and yours comes back to mine.',
+      body: `<p><b>TX</b> (transmit) of one chip → <b>RX</b> (receive) of the other, both ways, plus a shared GND. There's no clock wire, so both sides must agree on the speed (<b>baud rate</b>) ahead of time.{{sf_serial}}</p>
+             <p>It's how your Arduino talks to your computer (Serial Monitor), and how GPS modules and many radio modules talk.</p>`,
+      diagram: `<svg viewBox="0 0 400 200" class="w-full max-w-md">
+        <rect x="30" y="40" width="110" height="120" rx="10" fill="#d6e5f6" stroke="#1d1b18" stroke-width="2"/><text x="85" y="35" text-anchor="middle" font-size="11" font-weight="800">ESP32</text>
+        <rect x="260" y="40" width="110" height="120" rx="10" fill="#cfe3b2" stroke="#1d1b18" stroke-width="2"/><text x="315" y="35" text-anchor="middle" font-size="11" font-weight="800">GPS module</text>
+        <text x="120" y="75" text-anchor="end" font-size="11" font-weight="700">TX</text><text x="120" y="115" text-anchor="end" font-size="11" font-weight="700">RX</text><text x="120" y="150" text-anchor="end" font-size="11" font-weight="700">GND</text>
+        <text x="280" y="75" font-size="11" font-weight="700">TX</text><text x="280" y="115" font-size="11" font-weight="700">RX</text><text x="280" y="150" font-size="11" font-weight="700">GND</text>
+        <path d="M140 70 L260 110" stroke="#d0683a" stroke-width="3"/><path d="M140 110 L260 70" stroke="#1f63a0" stroke-width="3"/><path d="M140 146 L260 146" stroke="#1d1b18" stroke-width="3"/>
+        <text x="200" y="190" text-anchor="middle" font-size="11" fill="#6f6961">TX ↔ RX crossed · GND shared · same baud rate</text></svg>` },
+
+    { t: 'I²C', chip: 'roll call',
+      h: 'I²C: two wires, many chips, and each chip has an address.',
+      kid: 'A classroom: the teacher calls out a name, and only that student answers.',
+      body: `<p>Wires: <b>SDA</b> (data) and <b>SCL</b> (clock), plus power and GND. Every device has a (usually 7-bit) <b>address</b>, so many sensors can share the same two wires.{{sf_i2c}}</p>
+             <p>I²C lines <b>need pull-up resistors</b> (lesson 09). Start with <b>4.7 kΩ</b>. Many breakout boards already include them.{{sf_i2c}}</p>
+             <p>Great for slow sensors: temperature, humidity, light, motion (IMU), small OLED screens.</p>`,
+      compare: { good: { t: 'I²C is great for', items: ['several slow sensors on 2 pins', 'breakout modules', 'configuration chips'] },
+                 bad: { t: 'Watch out for', items: ['two chips with the same address', 'missing (or too many) pull-ups', 'long wires: keep the bus short'] } } },
+
+    { t: 'SPI', chip: 'tap on the shoulder',
+      h: 'SPI: four wires and fast, with a "you\'re chosen" wire for each chip.',
+      kid: 'The teacher taps one kid on the shoulder, and that kid talks really fast until the tap stops.',
+      body: `<p><b>SCK</b> (clock), <b>MOSI</b> (controller → device), <b>MISO</b> (device → controller), and a <b>CS</b> (chip select) for each device. Every extra device costs one more CS pin.{{sf_spi}} Newer docs may call these SDO/SDI or COPI/CIPO, same thing.</p>
+             <p>Use it for fast stuff: displays, SD cards, flash memory.</p>`,
+      tiles: [ { i: '⏱️', l: 'SCK', s: 'clock' }, { i: '➡️', l: 'MOSI', s: 'controller out' }, { i: '⬅️', l: 'MISO', s: 'controller in' }, { i: '👉', l: 'CS', s: 'one per device' } ] },
+
+    { t: 'I²S + choosing', chip: 'which one when',
+      h: 'I²S is the audio bus, and your voice board\'s mic speaks it.',
+      kid: 'A special phone line just for music, so the song never stutters.',
+      body: `<p>I²S carries continuous audio: <b>SCK/BCLK</b> (bit clock), <b>WS/LRCLK</b> (left/right word select), <b>SD</b> (the data). The INMP441 mic's <b>L/R</b> pin picks the channel: tie it to GND for left.{{rnt_mic}}</p>
+             <p><b>Picking a bus:</b> a few slow sensors → I²C · a fast display/SD card → SPI · a module with TX/RX → UART · microphone/speaker → I²S.</p>`,
+      tiles: [ { i: '🌡️', l: 'slow sensors', s: 'I²C' }, { i: '🖥️', l: 'display / SD', s: 'SPI' }, { i: '🛰️', l: 'GPS / modem', s: 'UART' }, { i: '🎙️', l: 'mic / speaker', s: 'I²S' } ] },
+  ],
+  quiz: [
+    { q: 'UART wiring between two chips is…', o: ['TX to TX, RX to RX', 'TX to RX, RX to TX', 'both TX and RX to GND'], a: 1, why: 'Crossed: what one says (TX) goes to the other\'s ears (RX). Plus a shared GND.' },
+    { q: 'The two I²C signal wires are…', o: ['MOSI and MISO', 'TX and RX', 'SDA and SCL'], a: 2, why: 'SDA = data, SCL = clock. They need pull-ups.' },
+    { q: 'SPI needs one extra CS wire for each…', o: ['additional peripheral chip', 'additional data byte', 'additional pull-up resistor'], a: 0, why: 'Chip select picks who is talking. One per device.' },
+    { q: 'An I²C bus always needs…', o: ['flyback diodes', 'pull-up resistors', 'series capacitors'], a: 1, why: 'I²C lines are open-drain, so something must pull them HIGH. Start at 4.7 kΩ.' },
+  ],
+  build: {
+    h: 'Find what\'s talking on your bus.',
+    need: 'your board and any I²C module (OLED, BME280, IMU…) if you have one; otherwise just USB serial',
+    steps: [
+      'Serial: <code>Serial.begin(115200)</code> and print something. Set the monitor to the same baud. Then try a wrong baud and see the gibberish!',
+      'I²C module: VCC (check 3.3 or 5 V!), GND, SDA → board SDA, SCL → board SCL.',
+      'Run an "I2C scanner" sketch. It prints the address it finds (e.g. 0x3C for many OLEDs).',
+      'Look at the module: can you spot its pull-up resistors (often marked 472 = 4.7 kΩ)?',
+      'Read the module\'s pinout and write down which bus each of its pins belongs to.',
+    ],
+  },
+  cards: [
+    { name: 'Bus picker', sub: 'UART · I²C · SPI · I²S', color: 'bg-sky', use: 'deciding how a chip connects to your microcontroller.',
+      rules: 'UART: TX↔RX crossed, same baud · I²C: SDA/SCL + 4.7 kΩ pull-ups, unique addresses · SPI: SCK/MOSI/MISO + CS per chip · I²S: BCLK/WS/SD for audio. {{sf_i2c}}' },
+  ],
+  source: { title: 'SparkFun: I2C', url: 'https://learn.sparkfun.com/tutorials/i2c', note: 'Then the Serial Communication and SPI tutorials. Together they\'re the whole lesson in depth. ~45 min total.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>10 · Sensors & Analog Inputs</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 10,
+  steps: [
+    { t: 'Analog vs digital', chip: 'how much?',
+      h: 'Digital pins know only yes or no. Analog pins measure how much.',
+      kid: 'A light switch is only on or off. A dimmer knob can sit anywhere in between.',
+      body: `<p>An <b>ADC</b> (analog-to-digital converter) turns a voltage into a number your code can use.{{sf_adc}}</p>
+             <ul class="list-disc pl-5 space-y-1"><li><b>Arduino Uno:</b> 10-bit → numbers <b>0–1023</b> for 0–5 V.{{ard_ar}}</li><li><b>ESP32:</b> 12-bit → <b>0–4095</b>. It needs attenuation set to read up to ~3.3 V, and <b>ADC2 pins can't be used while Wi-Fi is on</b>. Use ADC1 pins on your voice board!{{esp_adc}}</li></ul>
+             <p>Drag the slider to feel the conversion.</p>`,
+      widget: 'adc' },
+
+    { t: 'Potentiometer', chip: 'the knob',
+      h: 'A potentiometer is a voltage divider with a knob.',
+      kid: 'A playground slide: where you sit on it decides how high up you are.',
+      body: `<p>Three legs: the two ends go to VCC and GND, and the <b>middle (wiper)</b> slides between them. That's lesson 03's divider, made adjustable!</p>
+             <p>Wiper → analog pin, and your code reads the knob's position. 10 kΩ pots are the common choice.</p>
+             <p>Uses: volume, brightness, setting a threshold. Small "trimmer" pots are set once with a screwdriver.</p>`,
+      diagram: `<svg viewBox="0 0 400 220" class="w-full max-w-md">
+        <text x="200" y="20" text-anchor="middle" font-size="11" font-weight="800">VCC</text><line x1="200" y1="26" x2="200" y2="50" stroke="#1d1b18" stroke-width="3"/>
+        <rect x="185" y="50" width="30" height="110" rx="6" fill="#fcdcbd" stroke="#1d1b18" stroke-width="2"/>
+        <line x1="200" y1="160" x2="200" y2="190" stroke="#1d1b18" stroke-width="3"/><text x="200" y="208" text-anchor="middle" font-size="11" font-weight="800">GND</text>
+        <polygon points="225,105 245,95 245,115" fill="#d0683a"/><line x1="245" y1="105" x2="320" y2="105" stroke="#d0683a" stroke-width="3"/>
+        <text x="330" y="109" font-size="11" font-weight="800" fill="#d0683a">A0</text><text x="250" y="90" font-size="10">wiper</text>
+        <text x="150" y="110" text-anchor="end" font-size="10" fill="#6f6961">10 kΩ pot</text></svg>` },
+
+    { t: 'Resistive sensors', chip: 'divider again',
+      h: "Many sensors are just resistors that change. Pair them with a fixed resistor.",
+      kid: 'A sponge gets heavier when wet. You notice it by comparing it with a dry one.',
+      body: `<p>An <b>LDR</b> (light), <b>thermistor</b> (temperature) and <b>force sensor</b> (pressure) all change resistance. On their own a pin can't read resistance, but put one in a <b>voltage divider</b> with a fixed resistor and the changing resistance becomes a changing voltage.{{sf_div}}</p>
+             <p><b>Pick the fixed resistor</b> close to the sensor's resistance in the middle of the range you care about. That gives the biggest swing.</p>`,
+      tiles: [ { i: '☀️', l: 'LDR', s: 'light → resistance' }, { i: '🌡️', l: 'Thermistor', s: 'temperature → resistance' }, { i: '✊', l: 'FSR', s: 'pressure → resistance' }, { i: '➗', l: '+ fixed R', s: '= divider → ADC pin' } ] },
+
+    { t: 'Smart sensors', chip: 'which one when',
+      h: 'Smart sensors do the measuring for you and send numbers.',
+      kid: "Instead of guessing the temperature from how your skin feels, you just ask a friend who's holding a thermometer.",
+      body: `<p>Many modern sensors have their own ADC inside and send ready-made numbers over a <b>bus</b> (I²C, SPI or I²S, lesson 14). They're more accurate and save your ADC pins.</p>
+             <p>Your voice board's microphone (INMP441) is one: it sends digital audio over I²S.{{rnt_mic}}</p>`,
+      compare: { good: { t: 'Analog (ADC) sensor', items: ['cheap, simple', 'pots, LDRs, thermistors', 'great for knobs and rough readings'] },
+                 bad: { t: 'Digital (bus) sensor', items: ['more accurate, calibrated', 'temp/humidity, IMU, mics', 'needs a protocol (lesson 14)'] } } },
+  ],
+  quiz: [
+    { q: 'Arduino Uno, 2.5 V on an analog pin reads about…', o: ['255', '511', '1023'], a: 1, why: '2.5 ÷ 5 × 1023 ≈ 511. Half the range, half the number.' },
+    { q: 'On an ESP32 with Wi-Fi running, avoid analog reads on…', o: ['ADC1 channel pins', 'any digital pins', 'ADC2 channel pins'], a: 2, why: 'ADC2 is shared with the Wi-Fi radio, so reads fail while Wi-Fi is on.' },
+    { q: 'An LDR light sensor needs…', o: ['a fixed resistor partner', 'a matching flyback diode', 'a big electrolytic cap'], a: 0, why: 'Together they form a divider, turning resistance into a voltage the ADC can read.' },
+    { q: "A potentiometer's middle pin goes to…", o: ['the 5V pin', 'the analog input', 'the GND pin'], a: 1, why: 'The wiper is the divider\'s output, so it goes to the ADC pin. The ends go to VCC and GND.' },
+  ],
+  build: {
+    h: 'Turn a knob (and light) into numbers.',
+    need: 'a 10 kΩ pot, an LDR + 10 kΩ resistor (if you have one), your board',
+    steps: [
+      'Pot ends → GND and 5V (Uno) or <b>3V3 (ESP32, never 5V)</b>. Wiper → A0 (ESP32: any ADC1 pin).',
+      'Print <code>analogRead(A0)</code>. Turn the knob end to end: 0 → 1023 (Uno) or 0 → 4095 (ESP32).',
+      'Check with your meter: does the voltage on the wiper match reading ÷ max × Vref?',
+      'Swap the pot for an LDR + 10 kΩ divider (ESP32: feed it from 3V3). Cover it with your hand and watch the number move.',
+      'Bonus: use the reading to set an LED\'s brightness (preview of PWM, lesson 13).',
+    ],
+  },
+  cards: [
+    { name: 'Potentiometer', sub: 'adjustable divider', color: 'bg-peach', use: 'knobs: volume, brightness, thresholds. Trimmer pots for set-once calibration.',
+      rules: 'ends → VCC & GND · wiper → ADC pin · 10 kΩ typical.' },
+    { name: 'Resistive sensor (LDR, thermistor)', sub: 'resistance that changes', color: 'bg-leaf', use: 'cheap light/temperature/pressure sensing.',
+      rules: 'pair with a fixed R ≈ sensor mid-range · into an ADC pin · ESP32: use ADC1 pins with Wi-Fi. {{esp_adc}}' },
+  ],
+  source: { title: 'SparkFun: Analog to Digital Conversion', url: 'https://learn.sparkfun.com/tutorials/analog-to-digital-conversion', note: 'How an ADC works and how to turn readings back into volts. ~15 min.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

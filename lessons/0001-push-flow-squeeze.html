@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>01 · Push, Flow, Squeeze: light an LED without killing it</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../assets/theme.js"></script>
+  <link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen">
+
+<!-- top bar -->
+<header class="no-print sticky top-0 z-10 bg-paper/95 backdrop-blur border-b border-line">
+  <div class="max-w-6xl mx-auto px-5 py-3 flex items-center gap-4">
+    <a href="../index.html" class="w-8 h-8 rounded-lg bg-rust border-[1.5px] border-ink shadow-pop grid place-items-center text-white font-extrabold text-sm">Ω</a>
+    <div class="leading-tight">
+      <div class="text-[11px] text-muted">Electronics, from zero to PCB</div>
+      <div class="text-sm font-bold">Lesson 01 · Push, Flow, Squeeze</div>
+    </div>
+    <nav class="ml-auto flex items-center gap-3 text-xs">
+      <a href="../index.html" class="underline">Course map</a>
+      <a href="../reference/component-field-guide.html" class="underline">Field guide</a>
+      <a href="0002-the-multimeter.html" class="underline hidden md:inline">02 →</a>
+      <span id="counter" class="chip bg-sheet">01 / 10</span>
+    </nav>
+  </div>
+  <div class="max-w-6xl mx-auto px-5 pb-3"><div id="progress" class="flex gap-1.5"></div></div>
+</header>
+
+<main class="max-w-6xl mx-auto px-5 py-8">
+
+<!-- ============ 1 ============ -->
+<section data-step data-title="Why this matters" class="gap-8 lg:grid-cols-[minmax(0,430px)_1fr]">
+  <div class="space-y-4">
+    <span class="chip bg-peach">01 · the big idea</span>
+    <h1 class="text-2xl font-extrabold leading-tight">Every board you'll ever design comes down to three words.</h1>
+    <p class="text-sm leading-relaxed">You write apps. One day they'll talk to a board <em>you</em> designed, with an LED that blinks when your voice agent is listening, a button, a mic. Under every one of those parts, the same three things are happening:</p>
+    <ul class="text-sm space-y-2">
+      <li><span class="term">Push</span>: how hard electricity is shoved. Real name: <b>voltage</b>.</li>
+      <li><span class="term">Flow</span>: how much electricity moves. Real name: <b>current</b>.</li>
+      <li><span class="term">Squeeze</span>: how hard it is to get through. Real name: <b>resistance</b>.</li>
+    </ul>
+    <p class="text-sm leading-relaxed">Today's win: you'll light a real LED from your board, and you'll <b>calculate</b> which resistor to use instead of guessing.</p>
+    <p class="text-xs text-muted">Use ← → keys or the buttons below. ~15 minutes.</p>
+  </div>
+  <div class="pop-card grid-paper p-6 grid place-items-center min-h-[340px]">
+    <svg viewBox="0 0 420 260" class="w-full max-w-md">
+      <!-- tank -->
+      <rect x="30" y="30" width="90" height="150" rx="6" fill="#f8f0e6" stroke="#1d1b18" stroke-width="2"/>
+      <rect x="32" y="70" width="86" height="108" fill="#d6e5f6"/>
+      <text x="75" y="22" text-anchor="middle" font-size="12" font-weight="700">PUSH</text>
+      <text x="75" y="130" text-anchor="middle" font-size="10" fill="#1f63a0">water tank</text>
+      <!-- pipe -->
+      <path d="M120 160 H200" stroke="#1d1b18" stroke-width="18" fill="none"/>
+      <path d="M120 160 H200" stroke="#d6e5f6" stroke-width="14" fill="none"/>
+      <path d="M200 160 H260" stroke="#1d1b18" stroke-width="10" fill="none"/>
+      <path d="M200 160 H260" stroke="#d6e5f6" stroke-width="6" fill="none"/>
+      <path d="M260 160 H380" stroke="#1d1b18" stroke-width="18" fill="none"/>
+      <path d="M260 160 H380" stroke="#d6e5f6" stroke-width="14" fill="none"/>
+      <path d="M124 160 H376" stroke="#1f63a0" stroke-width="5" fill="none" class="flow"/>
+      <text x="230" y="140" text-anchor="middle" font-size="12" font-weight="700">SQUEEZE</text>
+      <text x="330" y="196" text-anchor="middle" font-size="12" font-weight="700">FLOW →</text>
+      <text x="210" y="240" text-anchor="middle" font-size="11" fill="#6f6961">voltage = push · current = flow · resistance = squeeze</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section data-step data-title="A circuit is a loop" class="gap-8 lg:grid-cols-[minmax(0,430px)_1fr]">
+  <div class="space-y-4">
+    <span class="chip bg-peach">02 · the loop</span>
+    <h2 class="text-2xl font-extrabold leading-tight">Electricity only moves if it can get back home.</h2>
+    <p class="kid text-sm">A toy train only runs if the track is a full circle. Pull out one piece of track and every train stops.</p>
+    <p class="text-sm leading-relaxed">A <b>circuit</b> is that full circle: from the battery's <b>+</b> side, through your parts, back to its <b>−</b> side. A <b>switch</b> is just a drawbridge in the track. <b>Click the switch</b> in the diagram.</p>
+    <p class="text-sm leading-relaxed text-muted">On diagrams we draw flow going from + round to −. This is called <i>conventional current</i>; every schematic you'll ever read uses it, so we will too.<a class="cite" href="https://learn.sparkfun.com/tutorials/voltage-current-resistance-and-ohms-law/current" target="_blank">[SparkFun]</a></p>
+  </div>
+  <div class="pop-card grid-paper p-6 grid place-items-center min-h-[340px]">
+    <svg viewBox="0 0 420 280" class="w-full max-w-md select-none">
+      <path id="loop" d="M80 60 H340 V220 H80 Z" fill="none" stroke="#1d1b18" stroke-width="3"/>
+      <path d="M80 60 H340 V220 H80 Z" fill="none" stroke="#d0683a" stroke-width="6" class="flow" id="loopflow"/>
+      <!-- battery -->
+      <rect x="55" y="110" width="50" height="60" rx="6" fill="#cfe3b2" stroke="#1d1b18" stroke-width="2"/>
+      <text x="80" y="135" text-anchor="middle" font-size="13" font-weight="800">+</text>
+      <text x="80" y="160" text-anchor="middle" font-size="13" font-weight="800">−</text>
+      <text x="30" y="145" text-anchor="middle" font-size="10" fill="#6f6961">battery</text>
+      <!-- lamp -->
+      <circle id="lamp" cx="340" cy="140" r="22" fill="#f8f0e6" stroke="#1d1b18" stroke-width="2"/>
+      <text x="385" y="144" font-size="10" fill="#6f6961">light</text>
+      <!-- switch -->
+      <g id="sw" class="cursor-pointer">
+        <rect x="170" y="40" width="80" height="40" fill="#f9f2e8"/>
+        <circle cx="180" cy="60" r="5" fill="#1d1b18"/><circle cx="240" cy="60" r="5" fill="#1d1b18"/>
+        <line id="swarm" x1="180" y1="60" x2="240" y2="60" stroke="#1d1b18" stroke-width="4" stroke-linecap="round" style="transform-origin:180px 60px;transition:transform .2s"/>
+        <text x="210" y="100" text-anchor="middle" font-size="11" font-weight="700" id="swlabel">switch: ON (click me)</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section data-step data-title="Voltage = push" class="gap-8 lg:grid-cols-[minmax(0,430px)_1fr]">
+  <div class="space-y-4">
+    <span class="chip bg-peach">03 · push</span>
+    <h2 class="text-2xl font-extrabold leading-tight">Voltage is how hard the water is pushed.</h2>
+    <p class="kid text-sm">Water from a tall tank on the roof sprays out harder than water from a bucket on the table. A taller tank pushes harder.</p>
+    <p class="text-sm leading-relaxed">In the water picture, <b>voltage</b> is the pressure.<a class="cite" href="https://learn.sparkfun.com/tutorials/voltage-current-resistance-and-ohms-law/voltage" target="_blank">[SparkFun]</a> We measure it in <b>volts (V)</b>. Things you already own:</p>
+    <ul class="text-sm space-y-1">
+      <li>🔋 AA battery: <b>1.5 V</b></li>
+      <li>🔌 USB port, and the Arduino Uno's "5V" pin: <b>5 V</b><a class="cite" href="https://docs.arduino.cc/tutorials/uno-rev3/intro-to-board" target="_blank">[Arduino]</a></li>
+      <li>📶 ESP32 and most modern chips run on <b>3.3 V</b></li>
+      <li>🟥 the square "PP3" battery: <b>9 V</b></li>
+    </ul>
+    <p class="text-sm leading-relaxed">Voltage on its own doesn't move anything. It's a <i>push waiting for a path</i>.</p>
+  </div>
+  <div class="pop-card grid-paper p-6 grid place-items-center min-h-[340px]">
+    <svg viewBox="0 0 420 260" class="w-full max-w-md">
+      <line x1="20" y1="220" x2="400" y2="220" stroke="#1d1b18" stroke-width="2"/>
+      <!-- bars: height ∝ volts (9V = 180px) -->
+      <g font-size="11" text-anchor="middle">
+        <rect x="45"  y="190" width="60" height="30"  fill="#d6e5f6" stroke="#1d1b18" stroke-width="2"/><text x="75"  y="182" font-weight="800">1.5 V</text><text x="75"  y="240">AA cell</text>
+        <rect x="135" y="154" width="60" height="66"  fill="#d6e5f6" stroke="#1d1b18" stroke-width="2"/><text x="165" y="146" font-weight="800">3.3 V</text><text x="165" y="240">ESP32</text>
+        <rect x="225" y="120" width="60" height="100" fill="#d6e5f6" stroke="#1d1b18" stroke-width="2"/><text x="255" y="112" font-weight="800">5 V</text><text x="255" y="240">USB / Uno</text>
+        <rect x="315" y="40"  width="60" height="180" fill="#d6e5f6" stroke="#1d1b18" stroke-width="2"/><text x="345" y="32"  font-weight="800">9 V</text><text x="345" y="240">PP3</text>
+      </g>
+      <text x="210" y="16" text-anchor="middle" font-size="11" fill="#6f6961">taller tank = bigger push</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section data-step data-title="Current = flow" class="gap-8 lg:grid-cols-[minmax(0,430px)_1fr]">
+  <div class="space-y-4">
+    <span class="chip bg-peach">04 · flow</span>
+    <h2 class="text-2xl font-extrabold leading-tight">Current is how much water actually goes past.</h2>
+    <p class="kid text-sm">Count the marbles rolling past your finger every second. Lots of marbles = big current. A few marbles = small current.</p>
+    <p class="text-sm leading-relaxed"><b>Current</b> is the flow.<a class="cite" href="https://learn.sparkfun.com/tutorials/voltage-current-resistance-and-ohms-law/current" target="_blank">[SparkFun]</a> We measure it in <b>amps (A)</b>. Small things use <b>milliamps (mA)</b>: <b>1 A = 1000 mA</b>.</p>
+    <ul class="text-sm space-y-1">
+      <li>💡 a small indicator LED: about <b>10–20 mA</b><a class="cite" href="https://learn.sparkfun.com/tutorials/light-emitting-diodes-leds/how-to-use-them" target="_blank">[SparkFun]</a></li>
+      <li>📱 a phone charging: a few <b>amps</b>, that's hundreds of times more</li>
+    </ul>
+    <p class="text-sm leading-relaxed">⚠️ This matters for <i>your</i> boards: one Arduino Uno pin must <b>never</b> go above <b>40 mA</b>, and ~20 mA is the recommended level.<a class="cite" href="https://docs.arduino.cc/retired/boards/arduino-uno-rev3-with-long-pins/" target="_blank">[Arduino]</a></p>
+  </div>
+  <div class="pop-card grid-paper p-6 grid place-items-center min-h-[340px]">
+    <svg viewBox="0 0 420 240" class="w-full max-w-md">
+      <text x="20" y="45" font-size="12" font-weight="700">LED · ~15 mA (a trickle)</text>
+      <path d="M20 70 H400" stroke="#1d1b18" stroke-width="22"/><path d="M20 70 H400" stroke="#f9f2e8" stroke-width="18"/>
+      <path d="M20 70 H400" stroke="#d0683a" stroke-width="7" class="flow" style="--speed:3.5s;stroke-dasharray:2 46"/>
+      <text x="20" y="145" font-size="12" font-weight="700">phone charging · ~2 A (a river)</text>
+      <path d="M20 175 H400" stroke="#1d1b18" stroke-width="22"/><path d="M20 175 H400" stroke="#f9f2e8" stroke-width="18"/>
+      <path d="M20 175 H400" stroke="#d0683a" stroke-width="7" class="flow" style="--speed:.35s;stroke-dasharray:2 6"/>
+      <text x="210" y="225" text-anchor="middle" font-size="11" fill="#6f6961">more dots per second = more current</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section data-step data-title="Resistance = squeeze" class="gap-8 lg:grid-cols-[minmax(0,430px)_1fr]">
+  <div class="space-y-4">
+    <span class="chip bg-peach">05 · squeeze + the one rule</span>
+    <h2 class="text-2xl font-extrabold leading-tight">Resistance squeezes the pipe. Ohm's law ties all three together.</h2>
+    <p class="kid text-sm">Step on a garden hose. The tap pushes just as hard, but less water comes out. Your foot is the resistance.</p>
+    <p class="text-sm leading-relaxed"><b>Resistance</b> is measured in <b>ohms (Ω)</b>. A <b>resistor</b> is a tiny part whose only job is to be a foot on the hose. The rule linking push, flow and squeeze is <b>Ohm's law</b>:<a class="cite" href="https://learn.sparkfun.com/tutorials/voltage-current-resistance-and-ohms-law/ohms-law" target="_blank">[SparkFun]</a></p>
+    <div class="pop-card px-4 py-3 text-center text-lg font-extrabold">V = I × R &nbsp;→&nbsp; <span class="text-rust">I = V ÷ R</span></div>
+    <p class="text-sm leading-relaxed">(<b>I</b> is the letter for current.) Push harder → more flow. Squeeze harder → less flow. <b>Play with the sliders</b> and watch the dots.</p>
+  </div>
+  <div class="pop-card grid-paper p-6 space-y-5 min-h-[340px]">
+    <svg viewBox="0 0 420 180" class="w-full">
+      <path d="M60 40 H360 V150 H60 Z" fill="none" stroke="#1d1b18" stroke-width="3"/>
+      <path d="M60 40 H360 V150 H60 Z" fill="none" stroke="#d0683a" stroke-width="6" class="flow" id="ohmflow"/>
+      <rect x="40" y="70" width="40" height="50" rx="5" fill="#cfe3b2" stroke="#1d1b18" stroke-width="2"/>
+      <text x="60" y="100" text-anchor="middle" font-size="11" font-weight="800" id="ohmVtxt">5V</text>
+      <rect x="170" y="28" width="80" height="24" rx="4" fill="#fcdcbd" stroke="#1d1b18" stroke-width="2"/>
+      <text x="210" y="45" text-anchor="middle" font-size="11" font-weight="800" id="ohmRtxt">220Ω</text>
+    </svg>
+    <label class="block text-xs">Push (voltage): <b id="ohmV">5.0 V</b><input id="sV" type="range" min="0" max="9" step="0.5" value="5"></label>
+    <label class="block text-xs">Squeeze (resistance): <b id="ohmR">220 Ω</b><input id="sR" type="range" min="100" max="2000" step="10" value="220"></label>
+    <div class="pop-card bg-sheet px-4 py-3 text-sm">Flow: <b id="ohmI" class="text-rust text-lg">22.7 mA</b> <span class="text-muted text-xs" id="ohmCalc"></span></div>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section data-step data-title="Meet the LED" class="gap-8 lg:grid-cols-[minmax(0,430px)_1fr]">
+  <div class="space-y-4">
+    <span class="chip bg-peach">06 · the greedy light</span>
+    <h2 class="text-2xl font-extrabold leading-tight">An LED is a one-way door that glows, and it's greedy.</h2>
+    <p class="kid text-sm">An LED is like a kid at a juice tap. Give it a cup and it's happy. Give it the whole tap and it drinks until it pops.</p>
+    <ul class="text-sm space-y-2 leading-relaxed">
+      <li><b>One-way:</b> current only goes in the <b>long leg</b> (anode, +) and out the <b>short leg</b> (cathode, −). Backwards = nothing lights.<a class="cite" href="https://learn.sparkfun.com/tutorials/light-emitting-diodes-leds/the-basics" target="_blank">[SparkFun]</a></li>
+      <li><b>Uses up some push:</b> a red LED "eats" about <b>2 V</b>; blue/white ones about <b>3 V</b>. This is its <b>forward voltage</b> (V<sub>f</sub>).<a class="cite" href="https://lastminuteengineers.com/led-series-resistor-calculator/" target="_blank">[LME]</a></li>
+      <li><b>Greedy:</b> past that voltage, a tiny bit more push makes current shoot up, so the LED can't limit itself. It needs a resistor to be its cup.<a class="cite" href="https://lastminuteengineers.com/led-series-resistor-calculator/" target="_blank">[LME]</a></li>
+    </ul>
+    <p class="text-sm"><b>Toggle the resistor</b> in the diagram →</p>
+  </div>
+  <div class="pop-card grid-paper p-6 space-y-4 min-h-[340px]">
+    <svg viewBox="0 0 420 220" class="w-full">
+      <path d="M60 40 H360 V180 H60 Z" fill="none" stroke="#1d1b18" stroke-width="3"/>
+      <path d="M60 40 H360 V180 H60 Z" fill="none" stroke="#d0683a" stroke-width="6" class="flow" id="ledflow"/>
+      <rect x="40" y="85" width="40" height="50" rx="5" fill="#cfe3b2" stroke="#1d1b18" stroke-width="2"/>
+      <text x="60" y="115" text-anchor="middle" font-size="11" font-weight="800">5V</text>
+      <g id="resG"><rect x="160" y="28" width="80" height="24" rx="4" fill="#fcdcbd" stroke="#1d1b18" stroke-width="2"/><text x="200" y="45" text-anchor="middle" font-size="11" font-weight="800">220Ω</text></g>
+      <!-- LED symbol on right side -->
+      <polygon points="345,95 375,95 360,120" fill="#f3c4bc" stroke="#1d1b18" stroke-width="2" id="ledTri"/>
+      <line x1="343" y1="122" x2="377" y2="122" stroke="#1d1b18" stroke-width="3"/>
+      <text x="384" y="100" font-size="10">+ long</text><text x="384" y="130" font-size="10">− short</text>
+      <text id="boom" x="300" y="112" font-size="26" opacity="0">💥</text>
+    </svg>
+    <button id="resToggle" class="btn">Remove resistor</button>
+    <div id="ledMsg" class="text-sm pop-card bg-sheet px-4 py-3">With 220 Ω: (5 − 2) ÷ 220 ≈ <b>13.6 mA</b>. A happy, glowing LED. ✅</div>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section data-step data-title="The resistor recipe" class="gap-8 lg:grid-cols-[minmax(0,430px)_1fr]">
+  <div class="space-y-4">
+    <span class="chip bg-peach">07 · the recipe</span>
+    <h2 class="text-2xl font-extrabold leading-tight">Picking an LED resistor in 3 moves.</h2>
+    <ol class="text-sm space-y-3 leading-relaxed list-decimal pl-5">
+      <li><b>Leftover push:</b> supply − LED. &nbsp;5 V − 2 V = <b>3 V</b> left for the resistor.</li>
+      <li><b>Divide by the flow you want:</b> 3 V ÷ 0.015 A = <b>200 Ω</b>.<a class="cite" href="https://lastminuteengineers.com/led-series-resistor-calculator/" target="_blank">[LME]</a></li>
+      <li><b>Round UP to a value you can buy.</b> Resistors come in fixed sizes (10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82, ×10, ×100…), the "E12" series.<a class="cite" href="https://www.electronics-notes.com/articles/electronic_components/resistors/standard-resistor-values-e-series-e3-e6-e12-e24-e48-e96.php" target="_blank">[EN]</a> 200 → <b>220 Ω</b>.</li>
+    </ol>
+    <div class="pop-card px-4 py-3 text-center font-extrabold">R = (V<sub>supply</sub> − V<sub>LED</sub>) ÷ I</div>
+    <p class="text-xs text-muted leading-relaxed">Why round <i>up</i>? A bigger resistor means a little less current: a slightly dimmer LED, but never a cooked one. The resistor only turns ~0.05 W into heat here, so a normal ¼ W resistor is plenty.<a class="cite" href="https://lastminuteengineers.com/led-series-resistor-calculator/" target="_blank">[LME]</a></p>
+  </div>
+  <div class="pop-card grid-paper p-6 space-y-4 min-h-[340px]">
+    <div class="text-sm font-bold">LED resistor calculator</div>
+    <label class="block text-xs">Supply
+      <select id="cS" class="mt-1 w-full border border-ink rounded-lg bg-sheet px-2 py-1.5"><option value="3.3">3.3 V (ESP32 pin)</option><option value="5" selected>5 V (USB / Uno)</option><option value="9">9 V battery</option></select></label>
+    <label class="block text-xs">LED colour
+      <select id="cL" class="mt-1 w-full border border-ink rounded-lg bg-sheet px-2 py-1.5"><option value="2.0" selected>Red (~2.0 V)</option><option value="3.2">Blue / white (~3.2 V)</option></select></label>
+    <label class="block text-xs">Flow you want: <b id="cIv">15 mA</b><input id="cI" type="range" min="2" max="20" value="15"></label>
+    <div class="pop-card bg-sheet px-4 py-3 text-sm space-y-1" id="cOut"></div>
+    <p class="text-[11px] text-muted">Forward voltages are typical values. Your LED's datasheet is the real answer.</p>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section data-step data-title="Check yourself" class="gap-8 lg:grid-cols-[minmax(0,430px)_1fr]">
+  <div class="space-y-4">
+    <span class="chip bg-peach">08 · from memory</span>
+    <h2 class="text-2xl font-extrabold leading-tight">Answer without scrolling back.</h2>
+    <p class="text-sm leading-relaxed">Pulling an answer out of your own head is what makes it stick. Re-reading only <i>feels</i> like learning. Guessing wrong and then seeing why is fine. That's the point.</p>
+    <div id="quiz-score" class="chip bg-leaf"></div>
+  </div>
+  <div class="pop-card grid-paper p-6 space-y-6">
+    <div class="quiz" data-answer="0" data-why="Voltage = push (pressure). Flow is current, narrowness is resistance.">
+      <p class="q text-sm font-bold">1. In the water picture, voltage is…</p>
+      <button>how hard water is pushed</button><button>how much water flows by</button><button>how narrow the pipe is</button>
+    </div>
+    <div class="quiz" data-answer="1" data-why="(5 − 2) ÷ 0.015 = 200 Ω. Then you'd buy 220 Ω.">
+      <p class="q text-sm font-bold">2. Red LED (2 V) on 5 V, you want 15 mA. R = ?</p>
+      <button>100 Ω</button><button>200 Ω</button><button>680 Ω</button>
+    </div>
+    <div class="quiz" data-answer="2" data-why="Bigger squeeze, same push → less flow (I = V ÷ R). Less current = dimmer.">
+      <p class="q text-sm font-bold">3. You swap the 220 Ω for a 1 kΩ (1000 Ω). The LED gets…</p>
+      <button>brighter, more current flows</button><button>same, the voltage stayed</button><button>dimmer, less current flows</button>
+    </div>
+    <div class="quiz" data-answer="1" data-why="Long leg = anode = goes toward +. Backwards, it blocks current.">
+      <p class="q text-sm font-bold">4. Which LED leg goes toward + ?</p>
+      <button>the shorter leg, the cathode</button><button>the longer leg, the anode</button><button>either leg, it never matters</button>
+    </div>
+    <div class="quiz" data-answer="2" data-why="Past its forward voltage an LED can't limit its own current. It gulps until it (or your pin) dies.">
+      <p class="q text-sm font-bold">5. Why can't an LED go straight onto 5 V?</p>
+      <button>it needs a higher voltage</button><button>it only works on batteries</button><button>it takes too much current</button>
+    </div>
+    <div class="quiz" data-answer="1" data-why="Always round UP: 300 isn't in E12, 270 would give too much current, 330 is the next size up.">
+      <p class="q text-sm font-bold">6. Your maths says 290 Ω. Which resistor do you buy?</p>
+      <button>270 Ω</button><button>330 Ω</button><button>300 Ω</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section data-step data-title="Build it" class="gap-8 lg:grid-cols-[minmax(0,430px)_1fr]">
+  <div class="space-y-4">
+    <span class="chip bg-peach">09 · hands on</span>
+    <h2 class="text-2xl font-extrabold leading-tight">Now do it for real on your breadboard.</h2>
+    <p class="text-sm">You need: Arduino (or any 5 V USB board), breadboard, 1 red LED, one 220 Ω or 330 Ω resistor, 2 wires.</p>
+    <div class="space-y-2 text-sm" id="checklist">
+      <label class="flex gap-2 items-start"><input type="checkbox" class="mt-1"> <span>Unplug USB first. Never wire a live board.</span></label>
+      <label class="flex gap-2 items-start"><input type="checkbox" class="mt-1"> <span>Wire: board <b>5V</b> → resistor → LED <b>long leg</b>.</span></label>
+      <label class="flex gap-2 items-start"><input type="checkbox" class="mt-1"> <span>LED <b>short leg</b> → board <b>GND</b> (that's "−", the way home).</span></label>
+      <label class="flex gap-2 items-start"><input type="checkbox" class="mt-1"> <span>Plug in USB. It glows? 🎉</span></label>
+      <label class="flex gap-2 items-start"><input type="checkbox" class="mt-1"> <span>Predict, then try: swap in a bigger resistor (1 kΩ). Brighter or dimmer?</span></label>
+      <label class="flex gap-2 items-start"><input type="checkbox" class="mt-1"> <span>Flip the LED around. What happens, and why?</span></label>
+    </div>
+    <p class="text-xs text-muted">No 220 Ω? 330 Ω is SparkFun's own default for this circuit, a bit dimmer and just as safe.<a class="cite" href="https://learn.sparkfun.com/tutorials/light-emitting-diodes-leds/how-to-use-them" target="_blank">[SparkFun]</a> Resistor colour bands: red-red-brown = 220, orange-orange-brown = 330.</p>
+  </div>
+  <div class="pop-card grid-paper p-6 grid place-items-center min-h-[340px]">
+    <svg viewBox="0 0 420 260" class="w-full max-w-md">
+      <!-- board -->
+      <rect x="20" y="40" width="110" height="180" rx="8" fill="#1f63a0" stroke="#1d1b18" stroke-width="2"/>
+      <text x="75" y="70" text-anchor="middle" font-size="12" fill="#fff" font-weight="800">YOUR BOARD</text>
+      <rect x="105" y="95" width="25" height="18" fill="#f9f2e8" stroke="#1d1b18"/><text x="96" y="108" text-anchor="end" font-size="11" fill="#fff" font-weight="700">5V</text>
+      <rect x="105" y="175" width="25" height="18" fill="#f9f2e8" stroke="#1d1b18"/><text x="96" y="188" text-anchor="end" font-size="11" fill="#fff" font-weight="700">GND</text>
+      <!-- wires -->
+      <path d="M130 104 H200" stroke="#d0683a" stroke-width="4" fill="none"/>
+      <!-- resistor -->
+      <rect x="200" y="94" width="70" height="20" rx="8" fill="#e9d3a8" stroke="#1d1b18" stroke-width="2"/>
+      <rect x="215" y="94" width="6" height="20" fill="#c0392b"/><rect x="228" y="94" width="6" height="20" fill="#c0392b"/><rect x="241" y="94" width="6" height="20" fill="#8a5a2b"/>
+      <text x="235" y="86" text-anchor="middle" font-size="10" font-weight="700">220 Ω</text>
+      <path d="M270 104 H350 V150" stroke="#1d1b18" stroke-width="3" fill="none"/>
+      <!-- LED drawn lying on its side: long leg on top (+), short leg below (-), never touching -->
+      <path d="M322 150 h14 v26 h-14 a13 13 0 0 1 0 -26 z" fill="#ff5a3c" stroke="#1d1b18" stroke-width="2" class="glow"/>
+      <path d="M336 157 H350 V148" stroke="#1d1b18" stroke-width="3" fill="none"/>
+      <path d="M336 169 H350 V184 H130" stroke="#1d1b18" stroke-width="3" fill="none"/>
+      <text x="358" y="150" font-size="10">long leg (+)</text>
+      <text x="358" y="188" font-size="10">short leg (−)</text>
+      <text x="230" y="240" text-anchor="middle" font-size="11" fill="#6f6961">5V → resistor → LED (+ long, − short) → GND</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section data-step data-title="Keep it" class="gap-8 lg:grid-cols-[minmax(0,430px)_1fr]">
+  <div class="space-y-4">
+    <span class="chip bg-peach">10 · what you now own</span>
+    <h2 class="text-2xl font-extrabold leading-tight">Two cards for your "which part, when" field guide.</h2>
+    <p class="text-sm leading-relaxed">Every lesson adds cards to the <a class="underline font-bold" href="../reference/component-field-guide.html">Component Field Guide</a>. By the time you open KiCad you'll pick parts on purpose, not by copying.</p>
+    <div class="pop-card bg-sheet p-4 text-sm space-y-2">
+      <div class="font-bold">📖 Read next (primary source)</div>
+      <a class="underline" href="https://learn.sparkfun.com/tutorials/voltage-current-resistance-and-ohms-law" target="_blank">SparkFun: Voltage, Current, Resistance, and Ohm's Law</a>
+      <p class="text-xs text-muted">Same water analogy, more depth, plus its own LED experiment. ~20 min.</p>
+    </div>
+    <div class="pop-card bg-violet p-4 text-sm">
+      <b>🙋 Stuck or curious?</b> Ask me (your Claude teacher) anything: "why 2 V?", "what if I use 3.3 V?", "is my wiring right?". Paste a photo of your breadboard and I'll check it.
+    </div>
+    <p class="text-xs text-muted">Next lesson: <b>the multimeter</b>, your x-ray glasses. Measure the push and flow you just calculated and see if the maths was right.</p>
+    <div class="flex flex-wrap gap-3 items-center no-print">
+      <button id="markDone" class="btn">✓ Mark lesson complete</button>
+      <a class="btn btn-primary" href="0002-the-multimeter.html">Next: 02 The Multimeter →</a>
+    </div>
+  </div>
+  <div class="space-y-4">
+    <div class="pop-card p-5">
+      <div class="flex items-center gap-2 mb-2"><span class="chip bg-peach">CARD</span><b>Resistor</b> <span class="text-muted text-xs">· Ω · the foot on the hose</span></div>
+      <p class="text-sm"><b>Use when:</b> you need to <u>limit current</u> (LEDs, protecting a microcontroller pin).</p>
+      <p class="text-sm"><b>Pick it by:</b> R = (V<sub>supply</sub> − V<sub>part</sub>) ÷ I, then round <b>up</b> to E12.</p>
+    </div>
+    <div class="pop-card p-5">
+      <div class="flex items-center gap-2 mb-2"><span class="chip bg-leaf">CARD</span><b>LED</b> <span class="text-muted text-xs">· the greedy one-way light</span></div>
+      <p class="text-sm"><b>Use when:</b> you want a <u>status light</u> (power on, listening, error).</p>
+      <p class="text-sm"><b>Rules:</b> long leg → +, always with a resistor, ~5–20 mA, red ≈ 2 V, blue/white ≈ 3 V.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="no-print sticky bottom-0 bg-paper/95 backdrop-blur border-t border-line">
+  <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
+    <button id="prev" class="btn">← Prev</button>
+    <span class="text-[11px] text-muted hidden sm:block">← → keys work too</span>
+    <button id="next" class="btn btn-primary"><span>Next</span> →</button>
+  </div>
+</footer>
+
+<script src="../assets/stepper.js"></script>
+<script src="../assets/quiz.js"></script>
+<script>
+// ---- completion tracking (shared with index.html) ----
+(function () {
+  const KEY = 'elec:done', btn = document.getElementById('markDone');
+  const done = () => JSON.parse(localStorage.getItem(KEY) || '[]');
+  const paint = () => { const d = done().includes(1); btn.textContent = d ? '✓ Completed' : '✓ Mark lesson complete'; btn.style.background = d ? '#cfe3b2' : ''; };
+  btn.onclick = () => { let d = done(); d = d.includes(1) ? d.filter((x) => x !== 1) : [...d, 1]; localStorage.setItem(KEY, JSON.stringify(d)); paint(); };
+  paint();
+})();
+
+// ---- step 2: switch ----
+(function () {
+  let on = true;
+  const sw = document.getElementById('sw'), arm = document.getElementById('swarm');
+  const flow = document.getElementById('loopflow'), lamp = document.getElementById('lamp'), lbl = document.getElementById('swlabel');
+  function draw() {
+    arm.style.transform = on ? 'rotate(0deg)' : 'rotate(-35deg)';
+    flow.classList.toggle('off', !on);
+    lamp.setAttribute('fill', on ? '#ffd166' : '#f8f0e6');
+    lamp.classList.toggle('glow', on);
+    lbl.textContent = on ? 'switch: ON (click me)' : 'switch: OFF, loop broken';
+  }
+  sw.addEventListener('click', () => { on = !on; draw(); });
+  draw();
+})();
+
+// ---- step 5: Ohm's law sliders ----
+(function () {
+  const sV = document.getElementById('sV'), sR = document.getElementById('sR');
+  const flow = document.getElementById('ohmflow');
+  function upd() {
+    const V = +sV.value, R = +sR.value, mA = V / R * 1000;
+    document.getElementById('ohmV').textContent = V.toFixed(1) + ' V';
+    document.getElementById('ohmR').textContent = R + ' Ω';
+    document.getElementById('ohmVtxt').textContent = V + 'V';
+    document.getElementById('ohmRtxt').textContent = R + 'Ω';
+    document.getElementById('ohmI').textContent = mA.toFixed(1) + ' mA';
+    document.getElementById('ohmCalc').textContent = `= ${V} ÷ ${R} × 1000`;
+    flow.classList.toggle('off', V === 0);
+    flow.style.setProperty('--speed', Math.max(0.15, Math.min(6, 20 / mA)).toFixed(2) + 's');
+  }
+  sV.oninput = sR.oninput = upd; upd();
+})();
+
+// ---- step 6: resistor toggle ----
+(function () {
+  let has = true;
+  const btn = document.getElementById('resToggle'), g = document.getElementById('resG');
+  const flow = document.getElementById('ledflow'), tri = document.getElementById('ledTri');
+  const boom = document.getElementById('boom'), msg = document.getElementById('ledMsg');
+  function draw() {
+    g.style.opacity = has ? 1 : 0.15;
+    flow.style.setProperty('--speed', has ? '1.8s' : '.12s');
+    flow.style.strokeDasharray = has ? '2 14' : '2 4';
+    tri.setAttribute('fill', has ? '#ff5a3c' : '#5c564e');
+    tri.classList.toggle('glow', has);
+    boom.setAttribute('opacity', has ? 0 : 1);
+    btn.textContent = has ? 'Remove resistor' : 'Put resistor back';
+    msg.innerHTML = has
+      ? 'With 220 Ω: (5 − 2) ÷ 220 ≈ <b>13.6 mA</b>. A happy, glowing LED. ✅'
+      : 'No resistor: nothing limits the flow. The current rockets past 20 mA, the LED flashes bright then <b>dies</b>, and if a microcontroller pin is doing the pushing, that pin can be damaged above 40 mA. ❌';
+  }
+  btn.onclick = () => { has = !has; draw(); }; draw();
+})();
+
+// ---- step 7: calculator ----
+(function () {
+  const E12 = [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82];
+  function nextE12(r) {
+    for (let d = 1; d <= 1e6; d *= 10) for (const v of E12) if (v * d >= r - 1e-9) return v * d;
+  }
+  const S = document.getElementById('cS'), L = document.getElementById('cL'), I = document.getElementById('cI');
+  function upd() {
+    const vs = +S.value, vf = +L.value, mA = +I.value;
+    document.getElementById('cIv').textContent = mA + ' mA';
+    const out = document.getElementById('cOut');
+    const left = vs - vf;
+    if (left < 0.3) {
+      out.innerHTML = `<b class="text-danger">Not enough push.</b> ${vs} V − ${vf} V leaves only ${left.toFixed(1)} V. Blue/white LEDs on 3.3 V are borderline, and tiny changes swing the current wildly. Use a higher supply or a red LED.`;
+      return;
+    }
+    const r = left / (mA / 1000), buy = nextE12(r), real = left / buy * 1000, p = left * real / 1000;
+    out.innerHTML = `Leftover push: <b>${left.toFixed(1)} V</b><br>Exact: ${left.toFixed(1)} ÷ ${(mA / 1000).toFixed(3)} = <b>${r.toFixed(0)} Ω</b><br>Buy: <b class="text-rust text-lg">${buy >= 1000 ? (buy / 1000) + ' kΩ' : buy + ' Ω'}</b> → real flow ≈ ${real.toFixed(1)} mA<br><span class="text-xs text-muted">heat in resistor ≈ ${(p * 1000).toFixed(0)} mW (¼ W part = 250 mW, fine)</span>`;
+  }
+  S.onchange = L.onchange = I.oninput = upd; upd();
+})();
+</script>
+</body>
+</html>

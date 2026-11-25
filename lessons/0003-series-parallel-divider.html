@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>03 · Series, Parallel & Dividers</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 3,
+  steps: [
+    { t: 'Series', chip: 'one path',
+      h: 'Series: one path, everybody goes through every part.',
+      kid: 'Kids walking single-file through three doors. Every kid goes through every door, one after another.',
+      body: `<p>Parts in <b>series</b> share one path, so:{{sf_sp}}</p>
+             <ul class="list-disc pl-5 space-y-1"><li>The <b>same current</b> flows through each part.</li><li>Resistances <b>add up</b>: R<sub>total</sub> = R1 + R2 + …</li><li>The voltage <b>shares out</b>. Each part takes a slice, and the slices add up to the supply.</li></ul>
+             <p>You measured this in lesson 02: ≈2 V across the LED + ≈3 V across the resistor = 5 V. 🎯</p>`,
+      diagram: `<svg viewBox="0 0 400 220" class="w-full max-w-md">
+        <path d="M60 40 H340 V180 H60 Z" fill="none" stroke="#1d1b18" stroke-width="3"/><path d="M60 40 H340 V180 H60 Z" fill="none" stroke="#d0683a" stroke-width="6" class="flow"/>
+        <rect x="40" y="85" width="40" height="50" rx="5" fill="#cfe3b2" stroke="#1d1b18" stroke-width="2"/><text x="60" y="115" text-anchor="middle" font-size="11" font-weight="800">5V</text>
+        <rect x="120" y="28" width="70" height="24" rx="4" fill="#fcdcbd" stroke="#1d1b18" stroke-width="2"/><text x="155" y="45" text-anchor="middle" font-size="11" font-weight="800">1 kΩ</text>
+        <rect x="230" y="28" width="70" height="24" rx="4" fill="#fcdcbd" stroke="#1d1b18" stroke-width="2"/><text x="265" y="45" text-anchor="middle" font-size="11" font-weight="800">1 kΩ</text>
+        <text x="155" y="72" text-anchor="middle" font-size="10" fill="#1f63a0">2.5 V</text><text x="265" y="72" text-anchor="middle" font-size="10" fill="#1f63a0">2.5 V</text>
+        <text x="200" y="205" text-anchor="middle" font-size="11" fill="#6f6961">total 2 kΩ · same 2.5 mA through both · 2.5 + 2.5 = 5 V</text></svg>` },
+
+    { t: 'Parallel', chip: 'many paths',
+      h: 'Parallel: many paths side by side, like lanes on a highway.',
+      kid: 'Open more checkout counters at the shop and more people get through each minute.',
+      body: `<p>Parts in <b>parallel</b> are connected across the same two points, so:{{sf_sp}}</p>
+             <ul class="list-disc pl-5 space-y-1"><li>Each branch gets the <b>same voltage</b>.</li><li>Branch currents <b>add up</b>.</li><li>Total resistance gets <b>smaller</b> than the smallest branch. Two equal resistors give half the resistance.</li></ul>
+             <p><b>Real life:</b> every socket in your house is in parallel. That's why each one gets the same voltage. And on your boards, each LED in parallel needs <i>its own</i> resistor.</p>`,
+      tiles: [ { i: '🏠', l: 'Wall sockets', s: 'parallel: same voltage everywhere' }, { i: '🎄', l: 'Old fairy lights', s: 'series: one dead bulb → all off' }, { i: '💡💡', l: 'LEDs in parallel', s: 'one resistor EACH' }, { i: '🧮', l: 'Two equal R', s: 'in parallel → half the value' } ] },
+
+    { t: 'Voltage divider', chip: 'the voltage cutter',
+      h: 'Two resistors in series make a "voltage cutter".',
+      kid: 'Two kids share a pizza. If one is twice as hungry, they get twice as much. The bigger resistor gets the bigger slice of voltage.',
+      body: `<p>Tap the point <i>between</i> two series resistors and you get a fraction of the input:{{sf_div}}</p>
+             <div class="pop-card px-4 py-3 text-center font-extrabold">Vout = Vin × R2 ÷ (R1 + R2)</div>
+             <p>SparkFun's go-to example: dividing a 5 V signal down to about 3.3 V. That's exactly what you need to feed a 5 V sensor's output into a 3.3 V ESP32 pin.{{sf_div}} Values of 1 kΩ–10 kΩ are typical.</p>
+             <p><b>Play with the sliders →</b> Try 5 V, R1 = 1 kΩ, R2 = 2 kΩ.</p>`,
+      widget: 'divider' },
+
+    { t: 'When NOT to use it', chip: 'the trap',
+      h: 'A divider is for signals and sensors, never for powering things.',
+      kid: "A straw is great for sipping juice. It's useless for filling a swimming pool.",
+      body: `<p>Whatever the "load" on Vout draws also has to come through R1, and that changes the voltage. SparkFun is blunt: dividers shouldn't be used to supply power to a load.{{sf_div}}</p>
+             <p>For power you'll use a <b>regulator</b> (lesson 12). For two-way signals like I²C you'll use a <b>level shifter</b> (lesson 13), because a divider only shifts <i>down</i>.</p>`,
+      compare: { good: { t: 'Use a divider for', items: ['5 V signal → 3.3 V input (one direction)', 'Reading resistive sensors (lesson 10)', 'Measuring a battery voltage with an ADC'] },
+                 bad: { t: 'Not for', items: ['Powering a chip, motor or LED strip', 'Two-way buses like I²C', 'Anything that needs real current'] } } },
+  ],
+  quiz: [
+    { q: 'Two 1 kΩ resistors in series total…', o: ['500 Ω', '1 kΩ', '2 kΩ'], a: 2, why: 'In series, resistances add: 1 k + 1 k = 2 k.' },
+    { q: 'Two 1 kΩ resistors in parallel total…', o: ['500 Ω', '1 kΩ', '2 kΩ'], a: 0, why: 'Two equal resistors in parallel give half: 500 Ω. More lanes means less squeeze.' },
+    { q: 'In parallel, every branch gets the same…', o: ['current', 'voltage', 'resistance'], a: 1, why: 'All branches connect across the same two points, so they see the same voltage.' },
+    { q: 'Can a voltage divider power a motor?', o: ['yes, if resistors are big', 'no, the load steals current', 'yes, if resistors are small'], a: 1, why: 'The load current also flows through R1, so the voltage sags. Use a regulator for power.' },
+    { q: '5 V in, R1 = 1 kΩ (top), R2 = 2 kΩ (bottom). Vout = ?', o: ['1.67 V', '2.50 V', '3.33 V'], a: 2, why: '5 × 2 ÷ (1 + 2) = 3.33 V. This is the classic 5 V → 3.3 V signal divider.' },
+  ],
+  build: {
+    h: 'Build a 5 V → 3.3 V divider and measure it.',
+    need: 'board 5V + GND, a 1 kΩ and a 2.2 kΩ resistor (or 10 kΩ + 20 kΩ), multimeter',
+    steps: [
+      'Predict first: 5 × 2.2 ÷ (1 + 2.2) = ? Write it down.',
+      '5V → 1 kΩ → middle point → 2.2 kΩ → GND.',
+      'Measure the middle point to GND in V⎓. How close is it to your prediction?',
+      'Swap to 10 kΩ + 22 kΩ (same ratio). Same voltage? Why?',
+      'Ω mode, power off: measure two equal resistors in series, then twisted together in parallel. Did you get 2× and ½?',
+    ],
+    note: 'Bigger resistors in the same ratio give the same voltage but waste less current. Too big, though, and an ADC input reads them poorly. 1–10 kΩ is the sweet spot.',
+  },
+  cards: [
+    { name: 'Voltage divider', sub: 'two resistors, one fraction', color: 'bg-peach', use: 'scaling a <u>signal</u> down (5 V → 3.3 V), reading resistive sensors, measuring battery voltage. {{sf_div}}',
+      rules: 'Vout = Vin × R2 ÷ (R1+R2) · 1–10 kΩ typical · never for powering a load · one-way only.' },
+    { name: 'Series vs parallel', sub: 'the two ways to connect', color: 'bg-leaf', use: 'working out totals before you measure.',
+      rules: 'series: same current, R adds, V shares · parallel: same V, currents add, R shrinks.' },
+  ],
+  source: { title: 'SparkFun: Voltage Dividers', url: 'https://learn.sparkfun.com/tutorials/voltage-dividers', note: 'The formula, worked examples, and real applications (sensors, level shifting). ~20 min.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

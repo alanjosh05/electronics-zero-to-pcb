@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Electronics, from zero to PCB: course map</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="assets/theme.js"></script>
+<link rel="stylesheet" href="assets/course.css" />
+</head>
+<body class="min-h-screen">
+<main class="max-w-5xl mx-auto px-6 py-12 space-y-10">
+  <header class="space-y-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-rust border-[1.5px] border-ink shadow-pop grid place-items-center text-white font-extrabold">Ω</div>
+      <span class="chip bg-peach">an interactive course · 21 lessons</span>
+    </div>
+    <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">Electronics, from zero to PCB.</h1>
+    <p class="text-sm leading-relaxed max-w-2xl">From "what is voltage?" to designing, ordering and powering up your own ESP32 voice board for your apps. Every lesson explains it like you're 6, then lets you try it with a widget, a quiz and a real build. Every lesson adds cards to the <a class="underline font-bold" href="reference/component-field-guide.html">"which part, when" field guide</a>.</p>
+    <div class="flex flex-wrap gap-3 items-center">
+      <a id="continue" class="btn btn-primary" href="lessons/0001-push-flow-squeeze.html">Start lesson 01 →</a>
+      <a class="btn" href="reference/component-field-guide.html">📇 Field guide</a>
+      <a class="btn" href="reference/pcb-checklist.html">✅ PCB checklist</a>
+      <span id="progressText" class="text-xs text-muted"></span>
+    </div>
+    <div class="h-3 rounded-full border border-ink bg-sheet overflow-hidden max-w-xl"><div id="bar" class="h-full bg-rust transition-all"></div></div>
+  </header>
+
+  <div id="phases" class="space-y-10"></div>
+
+  <footer class="pop-card bg-violet p-5 text-sm">
+    <b>🙋 Your teacher is one message away.</b> Stuck on any lesson, any widget, or your own KiCad screenshot? Ask Claude. Want people? <a class="underline" href="https://www.reddit.com/r/AskElectronics/" target="_blank">r/AskElectronics</a> for circuits, <a class="underline" href="https://www.reddit.com/r/PrintedCircuitBoard/" target="_blank">r/PrintedCircuitBoard</a> for board reviews, the <a class="underline" href="https://forum.kicad.info/" target="_blank">KiCad forum</a> for the tool.
+  </footer>
+</main>
+<script src="assets/course.js"></script>
+<script>
+(function () {
+  const C = window.COURSE, done = JSON.parse(localStorage.getItem('elec:done') || '[]');
+  const pad = (n) => String(n).padStart(2, '0');
+  const colors = { A: 'bg-leaf', B: 'bg-peach', C: 'bg-sky', D: 'bg-violet' };
+  document.getElementById('phases').innerHTML = C.phases.map((p) => `
+    <section class="space-y-4">
+      <div class="flex items-baseline gap-3"><span class="chip ${colors[p.id]}">PHASE ${p.id}</span><h2 class="text-xl font-extrabold">${p.name}</h2><span class="text-xs text-muted hidden sm:inline">${p.blurb}</span></div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        ${C.lessons.filter((l) => l.phase === p.id).map((l) => `
+          <a href="lessons/${l.file}" class="pop-card p-4 block hover:-translate-y-0.5 transition ${done.includes(l.n) ? 'bg-leaf' : ''}">
+            <div class="flex items-center justify-between"><span class="text-xs text-muted font-bold">${pad(l.n)}</span>${done.includes(l.n) ? '<span class="chip bg-sheet">✓ done</span>' : ''}</div>
+            <div class="font-extrabold mt-1">${l.title}</div>
+            <div class="text-xs text-muted mt-2">🏆 ${l.win}</div>
+          </a>`).join('')}
+      </div>
+    </section>`).join('');
+  const n = done.length, total = C.lessons.length;
+  document.getElementById('bar').style.width = (n / total * 100) + '%';
+  document.getElementById('progressText').textContent = `${n} / ${total} lessons complete`;
+  const nextL = C.lessons.find((l) => !done.includes(l.n));
+  const c = document.getElementById('continue');
+  if (nextL && n > 0) { c.href = 'lessons/' + nextL.file; c.textContent = `Continue: ${pad(nextL.n)} ${nextL.title} →`; }
+  if (!nextL) { c.href = 'lessons/0021-capstone-voice-board.html'; c.textContent = 'All done 🎉 Revisit the capstone →'; }
+})();
+</script>
+</body>
+</html>

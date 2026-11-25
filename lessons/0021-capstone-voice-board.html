@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>21 · Capstone: Your Voice Board</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 21,
+  steps: [
+    { t: 'The board', chip: 'the goal',
+      h: 'Your board: an ESP32-S3 that listens and talks to your app.',
+      kid: 'Building your own walkie-talkie from parts you understand, every single one.',
+      body: `<p>Everything in this course meets here. Every block is something you've already learned:</p>
+             <ul class="list-disc pl-5 space-y-1"><li><b>USB-C power</b> (lesson 12) → <b>3.3 V regulator</b> (12) → <b>ESP32-S3 module</b> (13)</li><li><b>I²S microphone</b> (14), <b>status LED</b> (01), <b>button</b> (09), <b>decoupling</b> everywhere (05)</li></ul>
+             <p>The ESP32-S3 connects to your app over Wi-Fi or Bluetooth, or over USB directly.</p>`,
+      tiles: [ { i: '🔌', l: 'USB-C', s: '5 V in' }, { i: '🎛️', l: '3.3 V LDO', s: 'quiet power' }, { i: '🧠', l: 'ESP32-S3', s: 'module' }, { i: '🎙️', l: 'INMP441', s: 'I²S mic' }, { i: '💡🔘', l: 'LED + button', s: 'UI' } ], tilesFlow: true },
+
+    { t: 'Power block', chip: 'block 1',
+      h: 'Block 1: USB-C in, 3.3 V out.',
+      kid: 'The kitchen: everything else gets its food from here.',
+      body: `<ul class="list-disc pl-5 space-y-1">
+               <li><b>USB-C receptacle</b>: <b>5.1 kΩ from CC1 to GND and a separate 5.1 kΩ from CC2 to GND</b>, or C-to-C chargers give no power.{{dk_usbc}}</li>
+               <li><b>Bulk cap</b> on VBUS (≈10 µF) (lesson 05).</li>
+               <li><b>3.3 V LDO</b>: 5 V → 3.3 V is a 1.7 V drop. Check the heat at your peak current with the lesson 12 widget. Wi-Fi bursts are the big spender, so pick a regulator rated comfortably above the module's peak (see its datasheet).</li>
+               <li>Input/output caps <b>exactly</b> as the regulator datasheet says.</li>
+               <li>Good practice: a <b>TVS/ESD</b> part on the USB data lines (lesson 06).</li></ul>`,
+      compare: { good: { t: 'Must have', items: ['2 × 5.1 kΩ on CC1/CC2', 'regulator rated above peak current', 'datasheet caps on regulator', 'power LED (optional, handy)'] },
+                 bad: { t: 'Classic mistakes', items: ['one shared CC resistor', 'AMS1117 too close to its limits', 'no bulk cap at the connector'] } } },
+
+    { t: 'Brain block', chip: 'block 2',
+      h: 'Block 2: the ESP32-S3 module. Copy its reference design.',
+      kid: 'When you use a new recipe, you follow it exactly the first time.',
+      body: `<p>Open the module datasheet (lesson 15) and copy its <b>reference schematic</b>:</p>
+             <ul class="list-disc pl-5 space-y-1"><li>Decoupling on the 3V3 pins (bulk + 100 nF) (lesson 05).</li><li><b>EN (reset)</b>: pull-up + capacitor (an RC delay, lesson 05) + RESET button.</li><li><b>BOOT</b> button on the boot strapping pin (lesson 09).</li><li>USB D+/D− from the connector to the module's USB pins, so you can flash and talk to it over USB.</li><li><b>Antenna keep-out</b>: module antenna at the board edge, no copper under it (lesson 18).</li></ul>`,
+      tiles: [ { i: '⏸️', l: 'Decoupling', s: 'per datasheet' }, { i: '🔁', l: 'EN', s: 'RC + reset button' }, { i: '🥾', l: 'BOOT', s: 'button + pull-up' }, { i: '📶', l: 'Antenna', s: 'edge + keep-out' } ] },
+
+    { t: 'Ears & UI', chip: 'block 3',
+      h: 'Block 3: the microphone, a status LED and a "talk" button.',
+      kid: 'Ears to listen, a light to say "I\'m listening!", and a button to say "start now".',
+      body: `<ul class="list-disc pl-5 space-y-1">
+               <li><b>INMP441 I²S mic</b>: VDD → 3.3 V, GND, <b>L/R → GND</b> (left channel), SCK/WS/SD → any free GPIOs you then set in code.{{rnt_mic}} 100 nF right at its VDD.</li>
+               <li><b>Status LED</b> from a GPIO at 3.3 V: red ≈ 2 V, 5 mA → (3.3 − 2) ÷ 0.005 = 260 Ω → <b>270 Ω</b> (lesson 01!).</li>
+               <li><b>Talk button</b>: GPIO to GND, internal pull-up, debounce in code (lesson 09).</li>
+               <li>Use <b>ADC1</b> pins if you ever add analog sensors (Wi-Fi blocks ADC2, lesson 10).</li></ul>`,
+      tiles: [ { i: '🎙️', l: 'INMP441', s: 'I²S · L/R → GND' }, { i: '💡', l: 'LED', s: '270 Ω @ 3.3 V' }, { i: '🔘', l: 'Talk button', s: 'INPUT_PULLUP' }, { i: '📈', l: 'Analog', s: 'ADC1 pins only' } ] },
+
+    { t: 'Your plan', chip: 'milestones',
+      h: 'The path from here to a working board in your hand.',
+      kid: 'Climbing a mountain one camp at a time, never all in one go.',
+      body: `<p>Do these in order. Each one is a session you can bring back to me:</p>
+             <ol class="list-decimal pl-5 space-y-1"><li>Breadboard prototype: ESP32-S3 dev board + INMP441 module, streaming audio to your app.</li><li>Schematic in KiCad, block by block, ERC clean.</li><li>Footprints + layout, 2-layer, GND plane, DRC clean.</li><li>Checklist → my review → r/PrintedCircuitBoard review.</li><li>Order (factory assembly for the module & tiny parts is worth it).</li><li>Bring-up (lesson 20) → flash firmware → connect your app. 🎉</li></ol>`,
+      tiles: [ { i: '🧪', l: 'Prototype', s: 'dev board + module' }, { i: '✏️', l: 'Schematic', s: 'ERC ✓' }, { i: '🛣️', l: 'Layout', s: 'DRC ✓' }, { i: '👥', l: 'Review', s: 'checklist + reddit' }, { i: '📦', l: 'Order', s: '+ assembly' }, { i: '🚀', l: 'Bring-up', s: 'your app talks to it' } ], tilesFlow: true },
+  ],
+  quiz: [
+    { q: 'A USB-C powered board needs on CC1 and CC2…', o: ['one shared resistor to GND', '5.1 kΩ each to GND', 'nothing at all, it works'], a: 1, why: 'Separate 5.1 kΩ pull-downs on each CC pin, or a C-to-C charger won\'t switch on 5 V.' },
+    { q: 'The INMP441\'s L/R pin tied to GND selects…', o: ['the left channel', 'the right channel', 'both stereo channels'], a: 0, why: 'L/R = GND → left, L/R = VDD → right.' },
+    { q: 'Status LED, red (2 V) at 5 mA from a 3.3 V pin:', o: ['68 Ω', '270 Ω', '1 kΩ'], a: 1, why: '(3.3 − 2) ÷ 0.005 = 260 Ω → round up to 270 Ω.' },
+    { q: 'Before ordering the capstone board you should…', o: ['skip straight to ordering', 'remove all decoupling caps', 'prototype on breadboard first'], a: 2, why: 'Prove the circuit and firmware on a breadboard before committing to copper.' },
+  ],
+  build: {
+    h: 'Start milestone 1 today.',
+    need: 'an ESP32-S3 dev board, an INMP441 module, jumper wires',
+    steps: [
+      'Wire INMP441: VDD → 3V3, GND → GND, L/R → GND, SCK/WS/SD → three free GPIOs.',
+      'Run the Random Nerd Tutorials INMP441 example with YOUR pin numbers.',
+      'See audio levels change when you talk.',
+      'Stream it to your app (Wi-Fi/WebSocket or USB serial). This is where your software skills kick in.',
+      'Then open KiCad and draw block 1 (power). Bring the screenshot to me.',
+    ],
+    note: 'Hit a wall at any milestone? That\'s the moment to ask me, or post on r/AskElectronics with photos.',
+  },
+  cards: [
+    { name: 'Voice board blocks', sub: 'your capstone BOM', color: 'bg-sky', use: 'designing an ESP32-S3 + mic board for your apps.',
+      rules: 'USB-C + 2×5.1 kΩ CC · 3.3 V regulator (+ datasheet caps) · ESP32-S3 module (EN RC, BOOT button, antenna keep-out) · INMP441 (L/R→GND, 100 nF) · LED 270 Ω · button INPUT_PULLUP. {{dk_usbc}}' },
+  ],
+  source: { title: 'Random Nerd Tutorials: ESP32 with INMP441 I2S Microphone', url: 'https://randomnerdtutorials.com/esp32-inmp441-i2s-microphone-arduino/', note: 'Wiring + code for milestone 1. Then open the ESP32-S3-WROOM-1 datasheet reference schematic.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

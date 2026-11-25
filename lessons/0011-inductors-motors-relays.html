@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>11 · Coils: Motors & Relays</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 11,
+  steps: [
+    { t: 'Inductors', chip: 'what it is',
+      h: 'A coil of wire hates sudden changes in current.',
+      kid: "A heavy bike wheel: hard to get spinning, and hard to stop once it's going.",
+      body: `<p>An <b>inductor</b> is a coil of wire. Current flowing through it builds a magnetic field that stores energy, and the coil resists any quick change in that current.</p>
+             <p>Coils are everywhere: inside <b>motors</b>, <b>relays</b>, <b>speakers</b>, <b>solenoids</b>, and the switching regulators of lesson 12.</p>`,
+      tiles: [ { i: '⚙️', l: 'Motor', s: 'coils make it spin' }, { i: '🔁', l: 'Relay', s: 'coil pulls a switch' }, { i: '🔊', l: 'Speaker', s: 'coil pushes a cone' }, { i: '🔋', l: 'Buck converter', s: 'coil stores & releases energy' } ] },
+
+    { t: 'Kickback', chip: 'the danger',
+      h: 'Switch a coil off and it fights back with a big voltage spike.',
+      kid: "Stop a running kid instantly and they crash into your arms. The energy has to go somewhere!",
+      body: `<p>When your transistor suddenly cuts the current, the coil's stored energy jumps out as a voltage spike. It can be many times your supply voltage, and it kills transistors and MOSFETs.</p>
+             <p><b>Fix:</b> a <b>flyback diode</b> across the coil, stripe toward +. It gives the current a loop to fade away in. Mount it close to the coil.{{jlc_fly}}</p>
+             <p>Only for DC coils. AC coils use other protectors, but that's outside this course.{{jlc_fly}}</p>`,
+      compare: { good: { t: 'Safe coil driver', items: ['transistor/MOSFET does the switching', 'flyback diode across the coil', 'separate supply, shared GND'] },
+                 bad: { t: 'Fried pin', items: ['coil straight on a GPIO pin', 'no flyback diode', 'motor on the MCU\'s own 3.3 V rail'] } } },
+
+    { t: 'Relays', chip: 'isolation',
+      h: 'A relay is a switch flipped by an electromagnet.',
+      kid: 'A magnet in one room pulls a lever that flips a light switch in another room. The two rooms never touch.',
+      body: `<p>The coil side (low voltage, driven by your transistor) and the contact side are <b>electrically separate</b>. That's why relays switch things on a completely different circuit.</p>
+             <p>A relay coil typically needs tens of mA, more than a pin likes, so use a transistor + flyback diode. Ready-made "relay modules" include both.</p>
+             <p class="pop-card bg-peach px-3 py-2">⚠️ Switching mains (wall power) is out of scope for this course. It can kill. Stick to low-voltage DC loads.</p>`,
+      tiles: [ { i: '🧠', l: 'Pin', s: 'signal' }, { i: '🚰', l: 'NPN/MOSFET', s: 'drives the coil' }, { i: '🔁', l: 'Relay coil + diode', s: 'magnet' }, { i: '🔌', l: 'Contacts', s: 'separate circuit' } ], tilesFlow: true },
+
+    { t: 'Motors', chip: 'which one when',
+      h: 'Which motor, and what drives it?',
+      kid: 'A toy car motor just spins, a robot arm turns to an exact angle, and a 3D printer moves in tiny precise steps.',
+      body: `<p>Motors draw big, spiky currents, so they <b>never</b> run from a GPIO pin. Give them their own supply and connect the grounds together.{{sf_motor}}</p>`,
+      tiles: [ { i: '🌀', l: 'DC motor', s: 'MOSFET + flyback; H-bridge to reverse' }, { i: '🦾', l: 'Servo', s: 'own power, PWM signal pin' }, { i: '🪜', l: 'Stepper', s: 'needs a stepper driver chip' }, { i: '📳', l: 'Vibration motor', s: 'small MOSFET/NPN + diode' } ] },
+  ],
+  quiz: [
+    { q: 'A flyback diode protects against…', o: ['a backwards battery', 'the kickback spike', 'too much brightness'], a: 1, why: 'Switching off a coil makes a voltage spike, and the diode gives that energy a safe path.' },
+    { q: 'A DC motor should get its power from…', o: ['the GPIO pin', 'the ADC pin', 'its own supply'], a: 2, why: 'Motors pull big spiky currents. Use a separate supply, a transistor switch and a shared ground.' },
+    { q: 'Relays are especially good for…', o: ['isolating a separate circuit', 'measuring a small voltage', 'storing energy for later'], a: 0, why: 'Coil and contacts are electrically separate, so you can switch an entirely different circuit.' },
+    { q: 'To run a DC motor both forwards and backwards you need…', o: ['a larger resistor', 'an H-bridge driver', 'a Zener diode'], a: 1, why: 'An H-bridge can flip which side of the motor gets + and which gets GND.' },
+  ],
+  build: {
+    h: 'Drive a small motor safely.',
+    need: 'small DC motor (or relay module), MOSFET or NPN from lessons 07/08, a diode (1N4007/1N4148/Schottky), a separate battery pack',
+    steps: [
+      'Battery + → motor → MOSFET drain. Source → GND.',
+      'Connect battery − to your board\'s GND (shared ground!).',
+      'Diode across the motor terminals: stripe to the battery + side.',
+      'Gate recipe from lesson 08 (220 Ω + 10 kΩ) to a PWM pin. Run the Fade example and the motor speeds up and slows down.',
+      'Relay module instead? Power it as its label says and watch the click. Look for the diode on its board.',
+    ],
+    note: 'Never let a motor\'s supply touch your board\'s 3.3 V/5 V pins. Only the grounds are shared.',
+  },
+  cards: [
+    { name: 'Relay', sub: 'magnet-flipped switch', color: 'bg-violet', use: 'switching a separate/isolated low-voltage circuit; simple on/off of bigger loads.',
+      rules: 'drive coil with transistor · flyback diode across coil · modules include both · no mains in this course.' },
+    { name: 'DC motor', sub: 'spins when powered', color: 'bg-leaf', use: 'fans, wheels, pumps, vibration.',
+      rules: 'own supply + shared GND · MOSFET + flyback diode · H-bridge driver to reverse · never from a pin. {{sf_motor}}' },
+  ],
+  source: { title: 'SparkFun: Motors and Selecting the Right One', url: 'https://learn.sparkfun.com/tutorials/motors-and-selecting-the-right-one', note: 'DC, servo and stepper motors compared, with when to pick each. ~20 min.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

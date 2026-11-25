@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PCB Checklist: before you order</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen">
+<main class="max-w-3xl mx-auto px-6 py-10 space-y-6">
+  <header class="space-y-2">
+    <a href="../index.html" class="text-xs underline no-print">← Course map</a>
+    <span class="chip bg-peach">REFERENCE</span>
+    <h1 class="text-3xl font-extrabold">PCB Checklist</h1>
+    <p class="text-sm text-muted">Tick every box before you post a review request or pay for boards. Ticks are saved in this browser. Prints on two pages.</p>
+  </header>
+  <div id="list" class="space-y-5"></div>
+  <button id="reset" class="btn no-print">Clear all ticks</button>
+</main>
+<script>
+const SECTIONS = [
+  ['Schematic (lesson 16)', [
+    'ERC passes: every warning fixed or understood',
+    'Every part has a value and the right reference (R1, C1, U1…)',
+    'Every IC power pin has a 100 nF decoupling cap drawn next to it',
+    'Regulator in/out caps match its datasheet typical application',
+    'Pull-ups on I²C (≈4.7 kΩ) and on every button/EN/BOOT line',
+    'LED resistors calculated: R = (Vsupply − Vf) ÷ I',
+    'Flyback diode across every motor/relay/solenoid coil',
+    'No 5 V signal going straight into a 3.3 V-only pin',
+    'USB-C sink: separate 5.1 kΩ on CC1 and CC2 to GND',
+    'ESP32: analog sensors on ADC1 pins (ADC2 is blocked by Wi-Fi)',
+  ]],
+  ['Parts & footprints (lessons 15, 17)', [
+    'Every footprint checked against the datasheet land pattern',
+    'Pin 1 / pinout verified for transistors, regulators, connectors',
+    'Imperial vs metric size codes double-checked (0603!)',
+    'Parts actually in stock (and in the fab\'s library if they assemble)',
+    'Voltage ratings on caps comfortably above the rail',
+    'Power ratings: every resistor and regulator ≥ 2× its calculated heat',
+  ]],
+  ['Layout (lesson 18)', [
+    'Connectors at board edges, labelled on silkscreen',
+    'Decoupling caps within a few mm of their pins, short via to GND',
+    'Bottom layer: unbroken GND pour, plus stitching vias',
+    'Power traces sized with a calculator (≥ 0.5 mm as a floor)',
+    'ESP32 module antenna at the edge, no copper under the keep-out',
+    'Rules set to the fab\'s capabilities, DRC: 0 errors, 0 unrouted',
+    'Mounting holes, board name/version, pin-1 dots, polarity marks (+, stripe)',
+    'Checked in the 3D viewer, and printed 1:1 to test-fit parts',
+  ]],
+  ['Files & order (lesson 19)', [
+    'Gerbers + drill files exported with the fab\'s KiCad settings',
+    'Zip opened in a Gerber viewer: every layer looks right',
+    'For assembly: BOM with supplier part numbers + CPL; rotations checked in the preview',
+    'Reviewed by Claude and/or r/PrintedCircuitBoard ("Review Request")',
+  ]],
+  ['Bring-up plan (lesson 20)', [
+    'Test points or headers on 3.3 V, GND and key signals',
+    'Plan: inspect → VCC↔GND no beep → current-limited power → measure rails → code',
+  ]],
+];
+const KEY = 'elec:pcbcheck', saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+document.getElementById('list').innerHTML = SECTIONS.map(([t, items], s) => `
+  <section class="pop-card p-5"><h2 class="font-extrabold mb-3">${t}</h2>
+  ${items.map((x, i) => `<label class="flex gap-2 items-start text-sm py-1"><input type="checkbox" data-k="${s}-${i}" ${saved[s + '-' + i] ? 'checked' : ''} class="mt-1"> <span>${x}</span></label>`).join('')}</section>`).join('');
+document.querySelectorAll('[data-k]').forEach((c) => c.onchange = () => { saved[c.dataset.k] = c.checked; localStorage.setItem(KEY, JSON.stringify(saved)); });
+document.getElementById('reset').onclick = () => { localStorage.removeItem(KEY); document.querySelectorAll('[data-k]').forEach((c) => c.checked = false); };
+</script>
+</body>
+</html>

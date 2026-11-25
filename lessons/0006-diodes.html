@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>06 · Diodes</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 6,
+  steps: [
+    { t: 'One-way door', chip: 'what it is',
+      h: 'A diode lets current through in one direction only.',
+      kid: 'A turnstile at a stadium. You can push through going in, but it locks if you try to come back out.',
+      body: `<p>Current flows from <b>anode → cathode</b>. The <b>stripe</b> on the body marks the cathode.{{sf_diode}}</p>
+             <p>Going forward it "costs" a little voltage, the <b>forward drop</b>:{{sf_diode}}</p>
+             <ul class="list-disc pl-5 space-y-1"><li>Ordinary silicon diode: about <b>0.6–0.7 V</b></li><li>Schottky diode: about <b>0.2–0.45 V</b> (cheaper on voltage, leaks a bit backwards)</li></ul>
+             <p>You've already used one: an <b>LED</b> is a diode that glows.</p>`,
+      diagram: `<svg viewBox="0 0 400 200" class="w-full max-w-md">
+        <line x1="40" y1="90" x2="160" y2="90" stroke="#1d1b18" stroke-width="3"/><polygon points="160,60 160,120 220,90" fill="#fcdcbd" stroke="#1d1b18" stroke-width="3"/>
+        <line x1="222" y1="58" x2="222" y2="122" stroke="#1d1b18" stroke-width="5"/><line x1="222" y1="90" x2="360" y2="90" stroke="#1d1b18" stroke-width="3"/>
+        <path d="M40 90 H360" stroke="#d0683a" stroke-width="5" class="flow" fill="none"/>
+        <text x="100" y="75" text-anchor="middle" font-size="12" font-weight="700">anode (+)</text><text x="300" y="75" text-anchor="middle" font-size="12" font-weight="700">cathode (−)</text>
+        <rect x="150" y="150" width="100" height="22" rx="10" fill="#1d1b18"/><rect x="225" y="150" width="12" height="22" fill="#d6ccbe"/>
+        <text x="200" y="195" text-anchor="middle" font-size="11" fill="#6f6961">real part: the stripe = cathode = the bar in the symbol</text></svg>` },
+
+    { t: 'Polarity protection', chip: 'job #1',
+      h: 'Job #1: stop a backwards battery from killing your board.',
+      kid: 'A plug that only fits one way round, so you can never put it in wrong.',
+      body: `<p>Someone <i>will</i> plug the battery in backwards one day. A diode in series with the power input simply blocks it.</p>
+             <p>The price is the forward drop: 0.7 V lost with silicon, less with a <b>Schottky</b>.{{sf_diode}} That's why Schottkys are the usual pick here.</p>
+             <p>(Fancier boards use a P-channel MOSFET for almost-zero loss. Same idea, smarter part.)</p>`,
+      compare: { good: { t: 'Schottky in series', items: ['blocks a reversed battery', 'loses only ~0.3 V', 'one cheap part'] },
+                 bad: { t: 'No protection', items: ['reversed supply → dead chips', 'silicon diode loses ~0.7 V (OK if you have spare)', 'Schottky leaks a little backwards (matters on tiny batteries)'] } } },
+
+    { t: 'Flyback', chip: 'job #2',
+      h: 'Job #2: catch the "kick" from motors and relays.',
+      kid: 'Turn a garden hose off suddenly and the pipe bangs (water hammer). Coils do the same thing with electricity.',
+      body: `<p>Motors, relays and solenoids are <b>coils</b>. When you switch one off, it fights back with a voltage spike that can kill the transistor driving it.</p>
+             <p>A diode placed <b>across the coil</b> (stripe toward +) gives that energy a safe loop to die out in. This is the <b>flyback diode</b>.{{jlc_fly}} Mount it close to the coil.</p>
+             <p>You'll wire one for real in lesson 11.</p>`,
+      tiles: [ { i: '🔁', l: 'Relay coil', s: 'needs a flyback diode' }, { i: '⚙️', l: 'DC motor', s: 'needs a flyback diode' }, { i: '🧲', l: 'Solenoid', s: 'needs a flyback diode' }, { i: '📍', l: 'Placement', s: 'across the coil, stripe to +' } ] },
+
+    { t: 'The diode family', chip: 'which one when',
+      h: 'Which diode when? A quick family photo.',
+      kid: 'Doors come in kinds: front door, cat flap, emergency exit. Same idea, different jobs.',
+      body: `<p>You don't need all of these yet, but you should recognise the names in a schematic.{{sf_diode}}</p>
+             <p><b>Zener</b> diodes conduct backwards at a set voltage, so they can clamp or make a simple reference. <b>TVS</b> diodes swallow static zaps (ESD) on things like USB lines, and you'll add them on your capstone board.</p>`,
+      tiles: [ { i: '➡️', l: '1N4148', s: 'small signal, fast' }, { i: '💪', l: '1N400x', s: 'general power rectifier' }, { i: '⚡', l: 'Schottky', s: 'low drop · polarity protection' }, { i: '🧱', l: 'Zener', s: 'clamps at a set voltage' }, { i: '🛡️', l: 'TVS', s: 'ESD / spike protection' }, { i: '💡', l: 'LED', s: 'the one that glows' } ] },
+  ],
+  quiz: [
+    { q: 'The stripe on a diode marks the…', o: ['anode, the + side', 'cathode, the − side', 'its maximum current rating'], a: 1, why: 'Stripe = cathode = the bar in the symbol. Current goes in the anode, out the cathode.' },
+    { q: 'An ordinary silicon diode drops about…', o: ['0.7 V', '7 V', '0.07 V'], a: 0, why: 'About 0.6–0.7 V forward. Schottkys drop less (~0.2–0.45 V).' },
+    { q: 'Why pick a Schottky for reverse-polarity protection?', o: ['it glows when working', 'it blocks both directions', 'it loses less voltage'], a: 2, why: 'Lower forward drop means less of your supply is wasted.' },
+    { q: 'A flyback diode on a relay coil goes…', o: ['across the coil', 'after the coil', 'before the coil'], a: 0, why: 'Across (parallel with) the coil, stripe toward +, so the kickback current can circulate safely.' },
+  ],
+  build: {
+    h: 'See the one-way door and measure its toll.',
+    need: 'LED circuit from lesson 01, one diode (1N4148, 1N4007 or a Schottky), multimeter',
+    steps: [
+      'Insert the diode in series between 5V and the resistor, stripe toward the resistor. LED still on?',
+      'Flip the diode around. LED off: the door is closed.',
+      'Flip it back. Measure the voltage across the diode (V⎓). Silicon ≈ 0.6–0.7 V, Schottky lower.',
+      'Is the LED slightly dimmer? Explain why using lesson 01\'s recipe (less leftover push).',
+      'Multimeter diode mode (→|-): many meters show the forward drop directly. Try it on the LED too!',
+    ],
+    note: 'No diode? Use a second LED. It is a diode too, with a bigger forward drop.',
+  },
+  cards: [
+    { name: 'Diode (silicon / Schottky)', sub: 'the one-way door', color: 'bg-peach', use: 'reverse-polarity protection, flyback across coils, steering current.',
+      rules: 'stripe = cathode · silicon ≈ 0.7 V drop · Schottky ≈ 0.2–0.45 V · flyback goes ACROSS the coil. {{sf_diode}}' },
+    { name: 'TVS / Zener', sub: 'the bouncers', color: 'bg-violet', use: 'TVS: ESD protection on connectors (USB). Zener: clamp to a fixed voltage.',
+      rules: 'recognise them in reference designs · place TVS right at the connector.' },
+  ],
+  source: { title: 'SparkFun: Diodes', url: 'https://learn.sparkfun.com/tutorials/diodes', note: 'Ideal vs real diodes, types, and applications like rectifiers and flyback. ~25 min.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

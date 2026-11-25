@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Component Field Guide: which part, when</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen">
+<!-- GENERATED from the lessons' cards. Rebuild instead of hand-editing (see NOTES.md). -->
+<main class="max-w-5xl mx-auto px-6 py-10 space-y-8">
+  <header class="space-y-2">
+    <a href="../index.html" class="text-xs underline no-print">← Course map</a>
+    <span class="chip bg-peach">REFERENCE</span>
+    <h1 class="text-3xl font-extrabold">Component Field Guide</h1>
+    <p class="text-sm text-muted">"I need to ___" → which part, and the rules for using it. Keep this open while you design. Every card links back to its lesson.</p>
+  </header>
+
+  <section class="pop-card p-5 grid sm:grid-cols-3 gap-4 text-sm">
+    <div><div class="text-xs text-muted">PUSH</div><b>Voltage · V · volts</b></div>
+    <div><div class="text-xs text-muted">FLOW</div><b>Current · I · amps</b> (1 A = 1000 mA)</div>
+    <div><div class="text-xs text-muted">SQUEEZE</div><b>Resistance · R · ohms Ω</b></div>
+    <div class="sm:col-span-3 text-center font-extrabold border-t border-line pt-3">V = I × R · P = V × I · LED: R = (Vs − Vf) ÷ I · divider: Vout = Vin × R2 ÷ (R1+R2) · τ = R × C</div>
+  </section>
+
+  <section class="pop-card p-5">
+    <h2 class="font-extrabold mb-3">I need to…</h2>
+    <table class="w-full text-sm"><tbody class="divide-y divide-line">
+      <tr><td class="py-2 pr-4">limit current / protect a pin or LED</td><td class="py-2 font-bold">Resistor</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0001-push-flow-squeeze.html">lesson 01</a></td></tr>
+      <tr><td class="py-2 pr-4">show a status light</td><td class="py-2 font-bold">LED + resistor</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0001-push-flow-squeeze.html">lesson 01</a></td></tr>
+      <tr><td class="py-2 pr-4">measure what's going on</td><td class="py-2 font-bold">Multimeter</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0002-the-multimeter.html">lesson 02</a></td></tr>
+      <tr><td class="py-2 pr-4">scale a 5 V signal down to 3.3 V (one way)</td><td class="py-2 font-bold">Voltage divider</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0003-series-parallel-divider.html">lesson 03</a></td></tr>
+      <tr><td class="py-2 pr-4">run from a battery</td><td class="py-2 font-bold">Battery (+ charger/protection for Li-ion)</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0004-power-and-batteries.html">lesson 04</a></td></tr>
+      <tr><td class="py-2 pr-4">keep a chip's power clean</td><td class="py-2 font-bold">100 nF ceramic cap per power pin</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0005-capacitors.html">lesson 05</a></td></tr>
+      <tr><td class="py-2 pr-4">smooth the board's power input</td><td class="py-2 font-bold">Electrolytic / bulk cap</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0005-capacitors.html">lesson 05</a></td></tr>
+      <tr><td class="py-2 pr-4">survive a backwards battery</td><td class="py-2 font-bold">Schottky diode (or P-MOSFET)</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0006-diodes.html">lesson 06</a></td></tr>
+      <tr><td class="py-2 pr-4">protect a transistor from a coil's kick</td><td class="py-2 font-bold">Flyback diode</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0006-diodes.html">lesson 06</a></td></tr>
+      <tr><td class="py-2 pr-4">protect USB lines from static</td><td class="py-2 font-bold">TVS diode</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0006-diodes.html">lesson 06</a></td></tr>
+      <tr><td class="py-2 pr-4">switch a small load from a 5 V pin</td><td class="py-2 font-bold">NPN transistor</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0007-transistors.html">lesson 07</a></td></tr>
+      <tr><td class="py-2 pr-4">switch / dim a big load from 3.3 V</td><td class="py-2 font-bold">Logic-level N-MOSFET</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0008-mosfets.html">lesson 08</a></td></tr>
+      <tr><td class="py-2 pr-4">read a button reliably</td><td class="py-2 font-bold">Pull-up resistor (or INPUT_PULLUP) + debounce</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0009-buttons-pullups.html">lesson 09</a></td></tr>
+      <tr><td class="py-2 pr-4">add a knob</td><td class="py-2 font-bold">Potentiometer</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0010-sensors-adc.html">lesson 10</a></td></tr>
+      <tr><td class="py-2 pr-4">sense light / temperature cheaply</td><td class="py-2 font-bold">LDR / thermistor + fixed resistor</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0010-sensors-adc.html">lesson 10</a></td></tr>
+      <tr><td class="py-2 pr-4">switch a separate circuit</td><td class="py-2 font-bold">Relay (+ transistor + diode)</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0011-inductors-motors-relays.html">lesson 11</a></td></tr>
+      <tr><td class="py-2 pr-4">spin something</td><td class="py-2 font-bold">DC motor + MOSFET + diode (H-bridge to reverse)</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0011-inductors-motors-relays.html">lesson 11</a></td></tr>
+      <tr><td class="py-2 pr-4">turn 5 V into 3.3 V (small load)</td><td class="py-2 font-bold">LDO regulator</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0012-power-supplies.html">lesson 12</a></td></tr>
+      <tr><td class="py-2 pr-4">big voltage drop or big current</td><td class="py-2 font-bold">Buck converter</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0012-power-supplies.html">lesson 12</a></td></tr>
+      <tr><td class="py-2 pr-4">take power from USB-C</td><td class="py-2 font-bold">2 × 5.1 kΩ CC resistors</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0012-power-supplies.html">lesson 12</a></td></tr>
+      <tr><td class="py-2 pr-4">run code and talk to my app</td><td class="py-2 font-bold">ESP32-S3 module</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0013-microcontrollers.html">lesson 13</a></td></tr>
+      <tr><td class="py-2 pr-4">connect 5 V and 3.3 V chips (two-way)</td><td class="py-2 font-bold">Level shifter (BSS138)</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0013-microcontrollers.html">lesson 13</a></td></tr>
+      <tr><td class="py-2 pr-4">connect a sensor/display/mic</td><td class="py-2 font-bold">I²C / SPI / UART / I²S</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0014-chip-talk.html">lesson 14</a></td></tr>
+      <tr><td class="py-2 pr-4">trust a new part</td><td class="py-2 font-bold">Its datasheet: the five numbers</td><td class="py-2 text-xs text-right"><a class="underline" href="../lessons/0015-datasheets.html">lesson 15</a></td></tr>
+    </tbody></table>
+  </section>
+
+  <section class="grid sm:grid-cols-2 gap-5">
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-peach">01</span><h3 class="font-extrabold text-base">Resistor</h3><span class="text-muted text-xs">· the foot on the hose</span></div>
+      <p><b>Use when:</b> limiting current (LEDs, protecting pins), dividers, pull-ups.</p>
+      <p><b>Rules:</b> R = (V<sub>supply</sub> − V<sub>part</sub>) ÷ I → round <b>up</b> to E12 (10 12 15 18 22 27 33 39 47 56 68 82) · power rating ≥ 2× heat · bands: red-red-brown 220 Ω, orange-orange-brown 330 Ω, brown-black-red 1 kΩ. <a class="cite" href="https://www.electronics-notes.com/articles/electronic_components/resistors/standard-resistor-values-e-series-e3-e6-e12-e24-e48-e96.php">[Electronics Notes]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0001-push-flow-squeeze.html">→ lesson 01 · Push, Flow, Squeeze</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-leaf">01</span><h3 class="font-extrabold text-base">LED</h3><span class="text-muted text-xs">· the greedy one-way light</span></div>
+      <p><b>Use when:</b> status lights: power, listening, error.</p>
+      <p><b>Rules:</b> long leg = anode = + · always with a resistor · 5–20 mA · red ≈ 2 V, blue/white ≈ 3 V. <a class="cite" href="https://learn.sparkfun.com/tutorials/light-emitting-diodes-leds">[SparkFun]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0001-push-flow-squeeze.html">→ lesson 01 · Push, Flow, Squeeze</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-sky">02</span><h3 class="font-extrabold text-base">Multimeter</h3><span class="text-muted text-xs">· your x-ray glasses</span></div>
+      <p><b>Use when:</b> checking any voltage, part value, connection or current. It is the first step of every debug.</p>
+      <p><b>Rules:</b> black in COM · V across · A in series (red → mA/10A jack) · Ω and beep with power OFF · move red back to V when done.</p>
+      <a class="text-xs underline no-print" href="../lessons/0002-the-multimeter.html">→ lesson 02 · The Multimeter</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-peach">03</span><h3 class="font-extrabold text-base">Voltage divider</h3><span class="text-muted text-xs">· two resistors, one fraction</span></div>
+      <p><b>Use when:</b> scaling a <u>signal</u> down (5 V → 3.3 V), reading resistive sensors, measuring battery voltage. <a class="cite" href="https://learn.sparkfun.com/tutorials/voltage-dividers">[SparkFun]</a></p>
+      <p><b>Rules:</b> Vout = Vin × R2 ÷ (R1+R2) · 1–10 kΩ typical · never for powering a load · one-way only.</p>
+      <a class="text-xs underline no-print" href="../lessons/0003-series-parallel-divider.html">→ lesson 03 · Series, Parallel & Dividers</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-leaf">03</span><h3 class="font-extrabold text-base">Series vs parallel</h3><span class="text-muted text-xs">· the two ways to connect</span></div>
+      <p><b>Use when:</b> working out totals before you measure.</p>
+      <p><b>Rules:</b> series: same current, R adds, V shares · parallel: same V, currents add, R shrinks.</p>
+      <a class="text-xs underline no-print" href="../lessons/0003-series-parallel-divider.html">→ lesson 03 · Series, Parallel & Dividers</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-peach">04</span><h3 class="font-extrabold text-base">Power rating</h3><span class="text-muted text-xs">· P = V × I</span></div>
+      <p><b>Use when:</b> choosing resistors, regulators and anything that gets warm.</p>
+      <p><b>Rules:</b> calculate the heat · choose a rating ≥ 2× it · hot to touch = redesign.</p>
+      <a class="text-xs underline no-print" href="../lessons/0004-power-and-batteries.html">→ lesson 04 · Power, Heat & Batteries</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-leaf">04</span><h3 class="font-extrabold text-base">Battery</h3><span class="text-muted text-xs">· push + fuel tank</span></div>
+      <p><b>Use when:</b> portable devices. Pick the voltage first, then the mAh for your runtime.</p>
+      <p><b>Rules:</b> runtime ≈ mAh ÷ mA · Li-ion ≈ 3.7 V nominal · Li-ion needs a proper charger + protection. <a class="cite" href="https://learn.sparkfun.com/tutorials/battery-technologies">[SparkFun]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0004-power-and-batteries.html">→ lesson 04 · Power, Heat & Batteries</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-leaf">05</span><h3 class="font-extrabold text-base">Ceramic capacitor 100 nF</h3><span class="text-muted text-xs">· the decoupling hero</span></div>
+      <p><b>Use when:</b> next to every IC power pin, and in RC filters/timers.</p>
+      <p><b>Rules:</b> no polarity · as close to the pin as possible · voltage rating well above supply. <a class="cite" href="https://resources.pcb.cadence.com/blog/2020-decoupling-capacitor-placement-in-pcb-layout">[Cadence]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0005-capacitors.html">→ lesson 05 · Capacitors: Tiny Buckets</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-peach">05</span><h3 class="font-extrabold text-base">Electrolytic capacitor</h3><span class="text-muted text-xs">· the bulk bucket</span></div>
+      <p><b>Use when:</b> smoothing the power input and regulator in/out (10–1000 µF).</p>
+      <p><b>Rules:</b> polarised: stripe = − · voltage rating ≥ 2× supply is comfy · follow regulator datasheet values.</p>
+      <a class="text-xs underline no-print" href="../lessons/0005-capacitors.html">→ lesson 05 · Capacitors: Tiny Buckets</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-peach">06</span><h3 class="font-extrabold text-base">Diode (silicon / Schottky)</h3><span class="text-muted text-xs">· the one-way door</span></div>
+      <p><b>Use when:</b> reverse-polarity protection, flyback across coils, steering current.</p>
+      <p><b>Rules:</b> stripe = cathode · silicon ≈ 0.7 V drop · Schottky ≈ 0.2–0.45 V · flyback goes ACROSS the coil. <a class="cite" href="https://learn.sparkfun.com/tutorials/diodes">[SparkFun]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0006-diodes.html">→ lesson 06 · Diodes: One-Way Doors</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-violet">06</span><h3 class="font-extrabold text-base">TVS / Zener</h3><span class="text-muted text-xs">· the bouncers</span></div>
+      <p><b>Use when:</b> TVS: ESD protection on connectors (USB). Zener: clamp to a fixed voltage.</p>
+      <p><b>Rules:</b> recognise them in reference designs · place TVS right at the connector.</p>
+      <a class="text-xs underline no-print" href="../lessons/0006-diodes.html">→ lesson 06 · Diodes: One-Way Doors</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-sky">07</span><h3 class="font-extrabold text-base">NPN transistor (BJT)</h3><span class="text-muted text-xs">· the tiny tap</span></div>
+      <p><b>Use when:</b> a pin needs to switch more current than it can give (buzzer, relay coil, a few LEDs).</p>
+      <p><b>Rules:</b> low-side: load → C, E → GND · base resistor always · I_base ≈ I_load ÷ 10 · check pinout in datasheet · coils need a flyback diode. <a class="cite" href="https://learn.sparkfun.com/tutorials/transistors">[SparkFun]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0007-transistors.html">→ lesson 07 · Transistors: The Tiny Tap</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-sky">08</span><h3 class="font-extrabold text-base">N-channel MOSFET (logic-level)</h3><span class="text-muted text-xs">· the big tap</span></div>
+      <p><b>Use when:</b> switching or PWM-dimming big loads (motors, LED strips, fans) from 3.3/5 V pins.</p>
+      <p><b>Rules:</b> R<sub>DS(on)</sub> rated at ≤ your pin voltage · 100 Ω–1 kΩ gate resistor · 10 kΩ gate pull-down · flyback diode on coils · AO3400A for 3.3 V. <a class="cite" href="https://components101.com/mosfets/ao3400a-n-channel-mosfet-pinout-datasheet">[Components101]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0008-mosfets.html">→ lesson 08 · MOSFETs: The Big Tap</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-peach">09</span><h3 class="font-extrabold text-base">Pull-up / pull-down resistor</h3><span class="text-muted text-xs">· the spring on the door</span></div>
+      <p><b>Use when:</b> every button, switch and open-drain line (I²C!) read by a pin.</p>
+      <p><b>Rules:</b> ~10 kΩ external, or INPUT_PULLUP internal · pull-up + button to GND = active-low. <a class="cite" href="https://learn.sparkfun.com/tutorials/pull-up-resistors">[SparkFun]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0009-buttons-pullups.html">→ lesson 09 · Buttons & Pull-ups</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-leaf">09</span><h3 class="font-extrabold text-base">Push button</h3><span class="text-muted text-xs">· momentary contact</span></div>
+      <p><b>Use when:</b> user input: reset, boot, "talk", menu.</p>
+      <p><b>Rules:</b> always with a pull-up/down · debounce (≈50 ms in code, or RC). <a class="cite" href="https://docs.arduino.cc/built-in-examples/digital/Debounce/">[Arduino]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0009-buttons-pullups.html">→ lesson 09 · Buttons & Pull-ups</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-peach">10</span><h3 class="font-extrabold text-base">Potentiometer</h3><span class="text-muted text-xs">· adjustable divider</span></div>
+      <p><b>Use when:</b> knobs: volume, brightness, thresholds. Trimmer pots for set-once calibration.</p>
+      <p><b>Rules:</b> ends → VCC & GND · wiper → ADC pin · 10 kΩ typical.</p>
+      <a class="text-xs underline no-print" href="../lessons/0010-sensors-adc.html">→ lesson 10 · Sensors & Analog Inputs</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-leaf">10</span><h3 class="font-extrabold text-base">Resistive sensor (LDR, thermistor)</h3><span class="text-muted text-xs">· resistance that changes</span></div>
+      <p><b>Use when:</b> cheap light/temperature/pressure sensing.</p>
+      <p><b>Rules:</b> pair with a fixed R ≈ sensor mid-range · into an ADC pin · ESP32: use ADC1 pins with Wi-Fi. <a class="cite" href="https://docs.espressif.com/projects/esp-idf/en/v4.2.3/esp32/api-reference/peripherals/adc.html">[Espressif]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0010-sensors-adc.html">→ lesson 10 · Sensors & Analog Inputs</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-violet">11</span><h3 class="font-extrabold text-base">Relay</h3><span class="text-muted text-xs">· magnet-flipped switch</span></div>
+      <p><b>Use when:</b> switching a separate/isolated low-voltage circuit; simple on/off of bigger loads.</p>
+      <p><b>Rules:</b> drive coil with transistor · flyback diode across coil · modules include both · no mains in this course.</p>
+      <a class="text-xs underline no-print" href="../lessons/0011-inductors-motors-relays.html">→ lesson 11 · Coils: Motors & Relays</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-leaf">11</span><h3 class="font-extrabold text-base">DC motor</h3><span class="text-muted text-xs">· spins when powered</span></div>
+      <p><b>Use when:</b> fans, wheels, pumps, vibration.</p>
+      <p><b>Rules:</b> own supply + shared GND · MOSFET + flyback diode · H-bridge driver to reverse · never from a pin. <a class="cite" href="https://learn.sparkfun.com/tutorials/motors-and-selecting-the-right-one">[SparkFun]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0011-inductors-motors-relays.html">→ lesson 11 · Coils: Motors & Relays</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-leaf">12</span><h3 class="font-extrabold text-base">LDO regulator</h3><span class="text-muted text-xs">· the quiet valve</span></div>
+      <p><b>Use when:</b> small drops at modest current, e.g. USB 5 V → 3.3 V, and quiet power for audio/ADC.</p>
+      <p><b>Rules:</b> heat = (Vin − Vout) × I · check dropout (AMS1117 ≈ 1.1–1.3 V) · in/out caps from datasheet. <a class="cite" href="https://www.lcsc.com/blog/ams1117-voltage-regulator-complete-guide/">[LCSC]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0012-power-supplies.html">→ lesson 12 · Power Supplies: LDO vs Buck</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-sky">12</span><h3 class="font-extrabold text-base">Buck / boost converter</h3><span class="text-muted text-xs">· the bucket brigade</span></div>
+      <p><b>Use when:</b> big drops, big currents, battery boards (buck down, boost up).</p>
+      <p><b>Rules:</b> efficient but noisy · follow the datasheet layout exactly · inductor + caps close to the chip.</p>
+      <a class="text-xs underline no-print" href="../lessons/0012-power-supplies.html">→ lesson 12 · Power Supplies: LDO vs Buck</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-peach">12</span><h3 class="font-extrabold text-base">USB-C power (sink)</h3><span class="text-muted text-xs">· 5.1 kΩ × 2</span></div>
+      <p><b>Use when:</b> any board powered from a USB-C port.</p>
+      <p><b>Rules:</b> 5.1 kΩ CC1→GND and CC2→GND, separate resistors · without them C-to-C chargers give 0 V. <a class="cite" href="https://forum.digikey.com/t/simple-way-to-use-usb-type-c-to-get-5v-at-up-to-3a-15w/7016">[DigiKey forum]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0012-power-supplies.html">→ lesson 12 · Power Supplies: LDO vs Buck</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-sky">13</span><h3 class="font-extrabold text-base">Microcontroller module (ESP32-S3)</h3><span class="text-muted text-xs">· the brain</span></div>
+      <p><b>Use when:</b> any board that runs code and talks to your app over Wi-Fi/BLE/USB.</p>
+      <p><b>Rules:</b> 3.3 V logic, not 5 V tolerant · decouple every power pin · keep the antenna area clear · copy the module datasheet reference circuit. <a class="cite" href="https://esp32.com/viewtopic.php?p=68290">[ESP32 forum]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0013-microcontrollers.html">→ lesson 13 · Microcontrollers</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-violet">13</span><h3 class="font-extrabold text-base">Level shifter</h3><span class="text-muted text-xs">· translator between 5 V and 3.3 V</span></div>
+      <p><b>Use when:</b> two-way or fast signals between 5 V and 3.3 V parts (I²C, SPI).</p>
+      <p><b>Rules:</b> BSS138 boards for I²C · divider OK for one-way 5→3.3 V · check V<sub>IH</sub> for 3.3→5 V. <a class="cite" href="https://learn.sparkfun.com/tutorials/logic-levels">[SparkFun]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0013-microcontrollers.html">→ lesson 13 · Microcontrollers</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-sky">14</span><h3 class="font-extrabold text-base">Bus picker</h3><span class="text-muted text-xs">· UART · I²C · SPI · I²S</span></div>
+      <p><b>Use when:</b> deciding how a chip connects to your microcontroller.</p>
+      <p><b>Rules:</b> UART: TX↔RX crossed, same baud · I²C: SDA/SCL + 4.7 kΩ pull-ups, unique addresses · SPI: SCK/MOSI/MISO + CS per chip · I²S: BCLK/WS/SD for audio. <a class="cite" href="https://learn.sparkfun.com/tutorials/i2c">[SparkFun]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0014-chip-talk.html">→ lesson 14 · How Chips Talk: UART, I²C, SPI</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-violet">15</span><h3 class="font-extrabold text-base">Datasheet checklist</h3><span class="text-muted text-xs">· five numbers</span></div>
+      <p><b>Use when:</b> before adding ANY new part to a schematic.</p>
+      <p><b>Rules:</b> supply range · current · V<sub>IH</sub>/V<sub>IL</sub> · pinout + package (check view) · typical application circuit · design inside recommended, never at abs max. <a class="cite" href="https://www.digikey.com/en/maker/tutorials/2024/how-to-read-and-understand-technical-datasheets">[DigiKey]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0015-datasheets.html">→ lesson 15 · Reading a Datasheet</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-violet">16</span><h3 class="font-extrabold text-base">Schematic habits</h3><span class="text-muted text-xs">· readable = reviewable</span></div>
+      <p><b>Use when:</b> every board, before any layout.</p>
+      <p><b>Rules:</b> power up, GND down, left→right flow · net labels · values on everything · decoupling caps next to their chip · ERC clean (PWR_FLAG where needed). <a class="cite" href="https://docs.kicad.org/10.0/en/getting_started_in_kicad/getting_started_in_kicad.html">[KiCad docs]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0016-schematics-kicad.html">→ lesson 16 · Schematics in KiCad</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-peach">17</span><h3 class="font-extrabold text-base">Package picker</h3><span class="text-muted text-xs">· THT vs SMD sizes</span></div>
+      <p><b>Use when:</b> assigning footprints and choosing parts to buy.</p>
+      <p><b>Rules:</b> 0805 for hand-solder passives · SOT-23 small FETs · SOT-223 regulators · THT for stressed connectors · check imperial vs metric · verify pin 1 vs datasheet. <a class="cite" href="https://www.electronics-notes.com/articles/electronic_components/surface-mount-technology-smd-smt/passive-component-size-codes-overlap-trap.php">[Electronics Notes]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0017-footprints-packages.html">→ lesson 17 · Footprints & Packages</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-sky">18</span><h3 class="font-extrabold text-base">Layout rules</h3><span class="text-muted text-xs">· the 2-layer starter set</span></div>
+      <p><b>Use when:</b> every first board.</p>
+      <p><b>Rules:</b> place before route · connectors on edges · decoupling hugging pins · GND plane on bottom · signals ~0.25 mm, power ≥ 0.5 mm (calculate) · antenna keep-out · DRC 0 errors. <a class="cite" href="https://www.lcsc.com/tools/conversion-calculator-pcb-trace-width">[LCSC calc]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0018-pcb-layout.html">→ lesson 18 · PCB Layout</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-violet">19</span><h3 class="font-extrabold text-base">Fab files</h3><span class="text-muted text-xs">· what to send</span></div>
+      <p><b>Use when:</b> every order.</p>
+      <p><b>Rules:</b> bare board: Gerbers + drill · assembly: + BOM (with part numbers) + CPL · always view in a Gerber viewer · design within the fab's capabilities · review first. <a class="cite" href="https://jlcpcb.com/help/article/how-to-generate-gerber-and-drill-files-in-kicad-9">[JLCPCB]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0019-manufacturing.html">→ lesson 19 · Ordering Your Board</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-leaf">20</span><h3 class="font-extrabold text-base">Bring-up checklist</h3><span class="text-muted text-xs">· first power on a new board</span></div>
+      <p><b>Use when:</b> every new or repaired board.</p>
+      <p><b>Rules:</b> inspect → VCC↔GND no beep → current-limited power → measure rails at pins → code one feature at a time. <a class="cite" href="https://learn.sparkfun.com/tutorials/how-to-solder-through-hole-soldering">[SparkFun]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0020-soldering-bringup.html">→ lesson 20 · Soldering & Bring-up</a>
+    </article>
+    <article class="pop-card p-5 space-y-2 text-sm break-inside-avoid">
+      <div class="flex items-center gap-2 flex-wrap"><span class="chip bg-sky">21</span><h3 class="font-extrabold text-base">Voice board blocks</h3><span class="text-muted text-xs">· your capstone BOM</span></div>
+      <p><b>Use when:</b> designing an ESP32-S3 + mic board for your apps.</p>
+      <p><b>Rules:</b> USB-C + 2×5.1 kΩ CC · 3.3 V regulator (+ datasheet caps) · ESP32-S3 module (EN RC, BOOT button, antenna keep-out) · INMP441 (L/R→GND, 100 nF) · LED 270 Ω · button INPUT_PULLUP. <a class="cite" href="https://forum.digikey.com/t/simple-way-to-use-usb-type-c-to-get-5v-at-up-to-3a-15w/7016">[DigiKey forum]</a></p>
+      <a class="text-xs underline no-print" href="../lessons/0021-capstone-voice-board.html">→ lesson 21 · Capstone: Your Voice Board</a>
+    </article>
+  </section>
+</main>
+</body>
+</html>

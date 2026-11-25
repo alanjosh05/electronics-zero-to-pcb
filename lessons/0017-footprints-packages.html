@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>17 · Footprints & Packages</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 17,
+  steps: [
+    { t: 'Symbol vs footprint', chip: 'two views',
+      h: 'The symbol is the idea; the footprint is where its legs touch the board.',
+      kid: 'A drawing of a chair vs. the four little dents its legs leave in the carpet.',
+      body: `<p>The same "220 Ω resistor" symbol can be built as a big through-hole part or a grain-of-rice SMD part. The <b>footprint</b> is the exact copper pad pattern for the physical part you'll buy.</p>
+             <p>In KiCad you <b>assign a footprint</b> to every symbol before layout.{{kicad}} Wrong footprint means the part doesn't fit, and that's the #1 first-board disaster.</p>`,
+      tiles: [ { i: '〰️', l: 'Symbol', s: 'R1 · 220 Ω' }, { i: '🟫', l: 'Footprint', s: 'R_0805_2012Metric' }, { i: '🧱', l: 'Real part', s: 'the one you order' } ], tilesFlow: true },
+
+    { t: 'THT vs SMD', chip: 'two families',
+      h: 'Through-hole legs vs surface-mount pads.',
+      kid: 'Pushing pins into a corkboard vs. sticking stickers on top.',
+      body: `<p><b>THT</b> (through-hole) parts have legs through drilled holes, like your breadboard parts. <b>SMD</b> parts sit on pads on the surface. Most modern chips only come in SMD.</p>`,
+      compare: { good: { t: 'THT: use for', items: ['connectors that get pulled', 'big power parts', 'breadboard-friendly prototypes', 'easy hand soldering'] },
+                 bad: { t: 'SMD: use for', items: ['almost everything else', 'small boards', 'cheap factory assembly', 'all modern chips'] } } },
+
+    { t: 'Package names', chip: 'the vocabulary',
+      h: 'Package names you\'ll see in every parts list.',
+      kid: 'Clothing sizes: S, M, L. Parts have sizes with names too.',
+      body: `<p>Chip resistors/caps use size codes. <b>0805</b> ≈ 2.0 × 1.25 mm and <b>0603</b> ≈ 1.6 × 0.8 mm. 0805 is a comfortable starter size for hand soldering.{{en_smd}}</p>
+             <p class="pop-card bg-peach px-3 py-2">⚠️ <b>Imperial vs metric trap:</b> imperial 0603 ≠ metric 0603 (that's a tiny imperial 0201!). KiCad names both, e.g. <code>R_0805_2012Metric</code>, so read the whole name.{{en_smd}}</p>`,
+      tiles: [ { i: '🟫', l: '0805 / 0603', s: 'resistors, caps, LEDs' }, { i: '🔺', l: 'SOT-23', s: 'small transistors/MOSFETs (AO3400)' }, { i: '🟪', l: 'SOT-223', s: 'regulators (AMS1117)' }, { i: '🐛', l: 'SOIC', s: 'chips with gull-wing legs' }, { i: '⬛', l: 'QFN', s: 'pads underneath (harder)' }, { i: '🔌', l: 'USB-C, headers', s: 'connectors' } ] },
+
+    { t: 'Match the part', chip: 'checking',
+      h: 'The footprint must match the exact part you\'ll buy.',
+      kid: 'Measure your foot before buying shoes online.',
+      body: `<ul class="list-disc pl-5 space-y-1"><li>Compare with the datasheet's <b>recommended land pattern</b> (lesson 15).</li><li>Check <b>pin 1</b> and pin order, especially for transistors, regulators and connectors.</li><li>Print your layout at <b>1:1</b> on paper and lay the real parts on it.</li><li>If a factory will assemble it, use the part that factory stocks, and its footprint.</li></ul>`,
+      compare: { good: { t: 'Do', items: ['footprint from datasheet land pattern', 'verify pin 1 and pin order', 'print 1:1 and test-fit'] },
+                 bad: { t: "Don't", items: ['pick "something similar" from the library', 'assume all SOT-23 pinouts match', 'mix imperial/metric codes'] } } },
+  ],
+  quiz: [
+    { q: 'Imperial "0805" is about…', o: ['0.8 × 0.5 mm', '2.0 × 1.25 mm', '8 × 5 mm'], a: 1, why: '0805 = 0.08 × 0.05 inch ≈ 2.0 × 1.25 mm (metric code 2012).' },
+    { q: 'A beginner-friendly size for hand soldering is…', o: ['0805 resistors', '0201 resistors', 'QFN-48 chips'], a: 0, why: '0805 is big enough to handle comfortably with tweezers.' },
+    { q: 'A USB connector that gets plugged in daily should be…', o: ['0402 parts', 'QFN parts', 'through-hole parts'], a: 2, why: 'Through-hole legs (or THT mounting tabs) give mechanical strength.' },
+    { q: 'Best check before ordering:', o: ['make every trace much thinner', 'print layout 1:1, test parts', 'remove all silkscreen text labels'], a: 1, why: 'A 1:1 paper print catches wrong footprints for free.' },
+  ],
+  build: {
+    h: 'Give your lesson 16 schematic real footprints.',
+    need: 'KiCad, your led-board project',
+    steps: [
+      'Open "Assign Footprints".',
+      'R → Resistor_SMD:R_0805_2012Metric. LED → LED_SMD:LED_0805_2012Metric. Connector → a 2-pin header or JST of your choice.',
+      'Open the footprint viewer for each one and note the pad sizes.',
+      'Open the 3D viewer later (after lesson 18) to see the parts.',
+      'Look up one real part on LCSC (e.g. a 220 Ω 0805). Check its package matches.',
+    ],
+  },
+  cards: [
+    { name: 'Package picker', sub: 'THT vs SMD sizes', color: 'bg-peach', use: 'assigning footprints and choosing parts to buy.',
+      rules: '0805 for hand-solder passives · SOT-23 small FETs · SOT-223 regulators · THT for stressed connectors · check imperial vs metric · verify pin 1 vs datasheet. {{en_smd}}' },
+  ],
+  source: { title: 'Electronics Notes: SMD size codes, the imperial/metric trap', url: 'https://www.electronics-notes.com/articles/electronic_components/surface-mount-technology-smd-smt/passive-component-size-codes-overlap-trap.php', note: 'Short read that saves a whole PCB order. Then: SparkFun PCB Basics.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

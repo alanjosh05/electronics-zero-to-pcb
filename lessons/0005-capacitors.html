@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>05 · Capacitors</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 5,
+  steps: [
+    { t: 'Tiny buckets', chip: 'what it is',
+      h: 'A capacitor is a tiny bucket that fills with charge and can empty in a flash.',
+      kid: 'A water balloon on a tap. It fills up, and when the tap stops, the balloon can still squirt for a moment.',
+      body: `<p>A capacitor stores charge between two plates. Its size is measured in <b>farads (F)</b>. Real parts are tiny fractions of that:{{sf_cap}}</p>
+             <p><b>µF</b> (micro) · <b>nF</b> (nano) · <b>pF</b> (pico). <b>100 nF = 0.1 µF</b>, the most common capacitor you'll ever place.</p>
+             <p>Two families you'll meet first:</p>
+             <ul class="list-disc pl-5 space-y-1"><li><b>Ceramic</b>: small values, no polarity (either way round).</li><li><b>Electrolytic</b>: big values, <b>polarised</b>. The stripe marks the <b>negative</b> leg, and backwards can make it fail.{{sf_cap}}</li></ul>`,
+      tiles: [ { i: '🟤', l: 'Ceramic', s: '1 pF – ~10s of µF · no polarity' }, { i: '🥫', l: 'Electrolytic', s: '1 µF – 1000s of µF · stripe = −' }, { i: '🔢', l: '104 marking', s: '10 × 10⁴ pF = 100 nF' }, { i: '🔋', l: 'Voltage rating', s: 'pick well above your supply' } ] },
+
+    { t: 'Decoupling', chip: 'job #1',
+      h: 'Job #1: a 100 nF cap right next to every chip\'s power pin.',
+      kid: "Keep a glass of water on your desk so you don't have to run to the kitchen every time you're thirsty.",
+      body: `<p>Chips gulp current in tiny, very fast bursts. The long path back to the power supply can't respond fast enough, so the voltage at the pin dips.{{cad_dec}}</p>
+             <p>A small cap right at the pin is a local reservoir that covers each gulp. This is <b>decoupling</b> (also called "bypass").</p>
+             <p><b>Placement matters more than the value.</b> A cap far away barely helps, so put it as close to the pin as you can.{{cad_dec}} On your PCBs this will be the most common part on the board.</p>`,
+      compare: { good: { t: 'Do', items: ['One 100 nF per power pin', 'Touching distance from the pin', 'Short, fat path to GND'] },
+                 bad: { t: "Don't", items: ['One cap "somewhere" for the whole board', 'Long thin trace between cap and pin', 'Skip them because "it worked on the breadboard"'] } } },
+
+    { t: 'Smoothing', chip: 'job #2',
+      h: 'Job #2: bigger caps smooth out a bumpy supply.',
+      kid: 'A shock absorber on a bike: bumps go in, a smooth ride comes out.',
+      body: `<p>Bigger caps (about 10–100 µF) sit where power enters the board and on regulator inputs and outputs. They absorb dips and spikes.{{sf_cap}}</p>
+             <p>Regulator datasheets tell you exactly which caps they need. You'll copy that in lesson 12.</p>
+             <p><b>Voltage rating:</b> always pick one comfortably above your supply. A "6.3 V" cap on a 5 V rail is cutting it close, so 10 V or 16 V is relaxed.</p>`,
+      tiles: [ { i: '🔌', l: 'Power input', s: '10–100 µF bulk' }, { i: '🎛️', l: 'Regulator in/out', s: 'exactly as datasheet says' }, { i: '🧠', l: 'Every chip pin', s: '100 nF decoupling' } ], tilesFlow: true, caption: 'the classic power path on a small board' },
+
+    { t: 'Timing', chip: 'job #3',
+      h: 'Job #3: with a resistor in front, a capacitor becomes a timer.',
+      kid: 'Filling a bucket through a thin straw takes longer than with a fat hose.',
+      body: `<p>Charge a cap through a resistor and it fills on a curve. The <b>time constant</b> τ = R × C is the time to reach about <b>63%</b>.{{lme_rc}} After about 5τ it's basically full.</p>
+             <p>Uses: smoothing a button's bounce (lesson 09), a power-on delay for a reset pin (the ESP32's EN pin uses one, see lesson 21), and simple filters.</p>`,
+      widget: 'rc' },
+  ],
+  quiz: [
+    { q: 'A 100 nF decoupling cap belongs…', o: ['right next to the chip', "at the board's far edge", 'anywhere on the board, really'], a: 0, why: 'Distance adds inductance, so a far-away cap barely helps. Hug the power pin.' },
+    { q: 'The stripe on an electrolytic capacitor marks…', o: ['the positive leg', 'the negative leg', 'the voltage rating'], a: 1, why: 'Stripe = negative. Backwards electrolytics can fail, sometimes dramatically.' },
+    { q: 'R = 10 kΩ, C = 100 µF. τ = ?', o: ['0.1 s', '1 s', '10 s'], a: 1, why: '10,000 × 0.0001 = 1 second.' },
+    { q: '100 nF is the same as…', o: ['10 µF', '100 µF', '0.1 µF'], a: 2, why: '1 µF = 1000 nF, so 100 nF = 0.1 µF. The marking is often "104".' },
+  ],
+  build: {
+    h: 'Find caps, then make an LED fade out.',
+    need: 'your Arduino/ESP32 board, LED + 220 Ω, one electrolytic cap 100–1000 µF rated ≥ 10 V',
+    steps: [
+      'Look at your dev board. Spot the tiny tan/brown chips beside the main chip (decoupling) and the bigger ones near the power input.',
+      'Build LED + resistor from 5V again.',
+      'Add the electrolytic across the breadboard + and − rails that feed the LED (stripe → − rail!).',
+      'Pull out the wire from the board 5V pin to the + rail. The LED fades instead of snapping off: the bucket is emptying.',
+      'Try a bigger or smaller cap. Longer or shorter fade? Explain it with τ = R × C.',
+    ],
+    note: 'Unplug USB before adding or removing the cap, and double-check the stripe before powering on.',
+  },
+  cards: [
+    { name: 'Ceramic capacitor 100 nF', sub: 'the decoupling hero', color: 'bg-leaf', use: 'next to every IC power pin, and in RC filters/timers.',
+      rules: 'no polarity · as close to the pin as possible · voltage rating well above supply. {{cad_dec}}' },
+    { name: 'Electrolytic capacitor', sub: 'the bulk bucket', color: 'bg-peach', use: 'smoothing the power input and regulator in/out (10–1000 µF).',
+      rules: 'polarised: stripe = − · voltage rating ≥ 2× supply is comfy · follow regulator datasheet values.' },
+  ],
+  source: { title: 'SparkFun: Capacitors', url: 'https://learn.sparkfun.com/tutorials/capacitors', note: 'Types, markings, and the "decoupling" and "power supply filtering" applications. ~25 min.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

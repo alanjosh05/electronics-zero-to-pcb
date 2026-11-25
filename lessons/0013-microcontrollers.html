@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>13 · Microcontrollers</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 13,
+  steps: [
+    { t: 'A tiny computer', chip: 'what it is',
+      h: 'A microcontroller is a whole tiny computer on one chip.',
+      kid: 'A little robot brain that follows your instructions over and over, forever, without getting bored.',
+      body: `<p>Processor + memory + <b>pins</b> to the outside world, all in one chip. It runs the code you upload, and it's the bridge between your software and the physical world.</p>
+             <ul class="list-disc pl-5 space-y-1"><li><b>Arduino Uno</b> (ATmega328P): 5 V logic, simple, great for learning.{{ard_uno}}</li><li><b>ESP32 / ESP32-S3</b>: 3.3 V logic, Wi-Fi + Bluetooth built in. This is the natural brain for <i>your</i> app-connected hardware.</li></ul>`,
+      tiles: [ { i: '🧠', l: 'CPU + memory', s: 'runs your code' }, { i: '📍', l: 'GPIO', s: 'on/off in & out' }, { i: '📈', l: 'ADC', s: 'reads voltages (lesson 10)' }, { i: '📡', l: 'Radio (ESP32)', s: 'talks to your app' } ] },
+
+    { t: 'GPIO', chip: 'pins',
+      h: 'Each GPIO pin can drive (output) or listen (input).',
+      kid: 'Every pin is a little door that can either shout out or listen in.',
+      body: `<p><b>Output</b>: HIGH = the supply voltage (5 V on Uno, 3.3 V on ESP32), LOW = 0 V. Mind the current limits: Uno pins 40 mA absolute max, ~20 mA comfortable.{{ard_uno}} Bigger loads → transistor (lessons 07–08).</p>
+             <p><b>Input</b>: reads HIGH or LOW. Needs a pull-up/down so it never floats (lesson 09).{{ard_dig}}</p>
+             <p>Pins can also have special jobs: ADC, PWM, I²C, SPI, UART, I²S. The board's <b>pinout diagram</b> is your map.</p>`,
+      compare: { good: { t: 'Pin can do', items: ['LED with resistor', 'read buttons, sensors', 'control a transistor/MOSFET gate', 'talk on a bus'] },
+                 bad: { t: 'Pin must not', items: ['drive a motor or relay coil directly', 'exceed its current limit', 'see more than its supply voltage'] } } },
+
+    { t: 'PWM', chip: 'fake analog',
+      h: 'PWM: blink so fast that it looks "half on".',
+      kid: 'Flick a light on and off really fast and the room just looks dimmer.',
+      body: `<p><b>Pulse Width Modulation</b> switches a pin on and off quickly. The <b>duty cycle</b> (% of time on) sets the average power.{{sf_pwm}}</p>
+             <p>LEDs look dimmer, motors spin slower, and servos read the pulse width as an angle. Combine it with a MOSFET (lesson 08) and you can dim a whole LED strip.</p>`,
+      widget: 'pwm' },
+
+    { t: 'Logic levels', chip: 'the trap',
+      h: '3.3 V chips and 5 V chips must not be wired together blindly.',
+      kid: "A grown-up's shout can hurt a baby's ears. A 5 V signal can hurt a 3.3 V chip's pins.",
+      body: `<p><b>ESP32 pins are not 5 V tolerant.</b> The maximum is about 3.6 V, and Espressif staff say plainly that none of the IO pins are 5 V tolerant.{{esp_5v}}</p>
+             <ul class="list-disc pl-5 space-y-1"><li><b>5 V → 3.3 V, one direction</b> (e.g. a sensor's output): a voltage divider (lesson 03).</li><li><b>Two-way</b> (I²C) or fast signals: a <b>level shifter</b>, e.g. a BSS138 MOSFET board or a buffer chip.{{sf_logic}}</li><li><b>3.3 V → 5 V input</b>: often reads as HIGH, but check the 5 V part's V<sub>IH</sub> in its datasheet (lesson 15).</li></ul>`,
+      tiles: [ { i: '5️⃣', l: '5 V sensor', s: 'output too high for ESP32' }, { i: '↕️', l: 'Level shifter', s: 'BSS138 / buffer chip' }, { i: '3️⃣', l: 'ESP32 pin', s: 'max ≈ 3.6 V' } ], tilesFlow: true },
+
+    { t: 'Dev boards vs your PCB', chip: 'which one when',
+      h: 'On your own PCB you\'ll usually solder a module, not a bare chip.',
+      kid: "When you build a toy car you buy a ready-made motor. You don't wind the copper wire yourself.",
+      body: `<p>A <b>dev board</b> (Uno, ESP32 DevKit) = chip + USB + regulator + buttons + LEDs. It's perfect for prototyping on a breadboard.</p>
+             <p>For your own board, an <b>ESP32 module</b> (e.g. ESP32-S3-WROOM) is a small metal-can part that already includes the crystal, flash memory and antenna. The hard radio design is done for you. You add power, buttons, USB and your sensors around it.</p>`,
+      tiles: [ { i: '🧪', l: 'Breadboard stage', s: 'use a dev board' }, { i: '📦', l: 'Your PCB', s: 'use a module' }, { i: '🔬', l: 'Advanced', s: 'bare chip + antenna design' } ], tilesFlow: true },
+  ],
+  quiz: [
+    { q: 'Feeding a 5 V signal straight into an ESP32 pin is…', o: ['safe, pins handle it', 'risky, use a shifter', 'fine, just add capacitors'], a: 1, why: 'ESP32 pins max out around 3.6 V. Use a divider (one-way) or a level shifter.' },
+    { q: 'PWM at 25% duty on a 5 V pin averages…', o: ['1.25 V', '2.50 V', '3.75 V'], a: 0, why: '5 × 0.25 = 1.25 V average.' },
+    { q: 'For your own PCB you\'ll usually use…', o: ['an entire DevKit board', 'a bare ESP32 chip', 'a pre-built ESP32 module'], a: 2, why: 'Modules include the crystal, flash and antenna, which skips the hard RF design.' },
+    { q: 'I²C between a 5 V sensor and an ESP32 needs…', o: ['a resistor divider only', 'a BSS138 level shifter', 'a flyback diode pair'], a: 1, why: 'I²C is two-way. A divider only shifts down, so use a bidirectional shifter.' },
+  ],
+  build: {
+    h: 'Combine everything so far into one tiny gadget.',
+    need: 'your board, LED + resistor, button, pot',
+    steps: [
+      'Find your board\'s pinout diagram. Mark which pins do PWM, ADC, I²C.',
+      'LED on a PWM pin: run "Fade".',
+      'Add the pot (lesson 10): pot sets LED brightness with <code>analogWrite(led, analogRead(pot)/4)</code> on Uno (or the ESP32 LEDC equivalent).',
+      'Add the button with INPUT_PULLUP (lesson 09): it toggles the LED on/off.',
+      'ESP32 owner? Check which of your pins are ADC1 (safe with Wi-Fi) for later.',
+    ],
+  },
+  cards: [
+    { name: 'Microcontroller module (ESP32-S3)', sub: 'the brain', color: 'bg-sky', use: 'any board that runs code and talks to your app over Wi-Fi/BLE/USB.',
+      rules: '3.3 V logic, not 5 V tolerant · decouple every power pin · keep the antenna area clear · copy the module datasheet reference circuit. {{esp_5v}}' },
+    { name: 'Level shifter', sub: 'translator between 5 V and 3.3 V', color: 'bg-violet', use: 'two-way or fast signals between 5 V and 3.3 V parts (I²C, SPI).',
+      rules: 'BSS138 boards for I²C · divider OK for one-way 5→3.3 V · check V<sub>IH</sub> for 3.3→5 V. {{sf_logic}}' },
+  ],
+  source: { title: 'SparkFun: Logic Levels', url: 'https://learn.sparkfun.com/tutorials/logic-levels', note: 'Why 5 V and 3.3 V chips can\'t always talk, and every way to fix it. Then: SparkFun PWM tutorial.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>20 · Soldering & Bring-up</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 20,
+  steps: [
+    { t: 'Safety', chip: 'first',
+      h: 'Safety first: hot iron, fumes, and lead.',
+      kid: 'Cooking on a stove: stay focused, never grab the hot pan, wash your hands after.',
+      body: `<p>A soldering iron tip runs at about 320–370 °C.{{lcsc_sol}} Treat it like a stove that is always on.</p>`,
+      compare: { good: { t: 'Always', items: ['iron back in its stand every time', 'ventilation / fan pulling fumes away', 'safety glasses (leads flick when cut)', 'wash hands after, especially with leaded solder'] },
+                 bad: { t: 'Never', items: ['catch a falling iron', 'breathe the flux smoke', 'eat or drink at the bench', 'solder a powered board'] } } },
+
+    { t: 'Solder & temperature', chip: 'the stuff',
+      h: 'Solder is a metal that melts low; flux makes it flow.',
+      kid: 'Like hot glue, but metal, and it conducts electricity.',
+      body: `<ul class="list-disc pl-5 space-y-1"><li><b>Leaded 63/37</b> melts at <b>183 °C</b>: easiest for beginners.{{lcsc_sol}}</li><li><b>Lead-free SAC305</b> melts at about <b>217–220 °C</b>: needs a hotter iron and good flux.{{lcsc_sol}}</li><li>Iron temperature: around <b>320–350 °C</b> for leaded and <b>340–370 °C</b> for lead-free is a practical start.{{lcsc_sol}}</li></ul>
+             <p><b>Flux</b> cleans the metal so solder can wet it. Most "it won't stick" problems are really flux problems.</p>`,
+      tiles: [ { i: '🔩', l: '63/37 leaded', s: 'melts 183 °C' }, { i: '🌿', l: 'SAC305 lead-free', s: 'melts ~217–220 °C' }, { i: '🌡️', l: 'Iron', s: '~320–370 °C' }, { i: '🧴', l: 'Flux', s: 'the secret sauce' } ] },
+
+    { t: 'A good joint', chip: 'technique',
+      h: 'Heat the pad and the leg together, then feed solder into them, not onto the iron.',
+      kid: 'Warm the toast first. Then the butter melts and spreads all by itself.',
+      body: `<p><b>Through-hole:</b> iron touches pad + leg (2–3 s), feed solder into the joint (not the tip), remove solder, then the iron. Result: a shiny little cone/volcano.{{sf_solder}}</p>
+             <p><b>SMD (0805):</b> tin one pad, hold the part with tweezers and reflow that pad, solder the other side, then touch up the first.</p>
+             <p>A dull, balled-up blob sitting on top is a <b>cold joint</b>. Reheat it with fresh flux.</p>`,
+      compare: { good: { t: 'Good joint', items: ['shiny, smooth cone', 'solder flowed onto pad AND leg', 'no bridges to neighbours'] },
+                 bad: { t: 'Bad joint', items: ['dull ball sitting on top (cold)', 'solder only on the leg', 'blob bridging two pins'] } } },
+
+    { t: 'Bring-up', chip: 'first power',
+      h: 'Bring-up: power a new board step by step, never all at once.',
+      kid: 'Dipping a toe in the pool before jumping in.',
+      body: `<p>The order that saves boards (and your parts):</p>
+             <ol class="list-decimal pl-5 space-y-1"><li><b>Eyes</b>: magnifier check for bridges, part orientation (diodes, LEDs, ICs pin 1).</li><li><b>Continuity</b>: VCC ↔ GND must <b>not</b> beep (lesson 02).</li><li><b>Limited power</b>: a bench supply with a current limit, or a USB power meter. Watch the current.</li><li><b>Measure rails</b>: 5 V, 3.3 V where expected?</li><li><b>Then</b> upload code and test one feature at a time.</li></ol>`,
+      tiles: [ { i: '🔍', l: 'Inspect', s: 'bridges, orientation' }, { i: '🔊', l: 'No short', s: 'VCC↔GND silent' }, { i: '🧯', l: 'Limited power', s: 'watch the mA' }, { i: '📏', l: 'Rails', s: '3.3 V OK?' }, { i: '💻', l: 'Code', s: 'one feature at a time' } ], tilesFlow: true },
+
+    { t: 'Debugging', chip: 'when it fails',
+      h: 'When it doesn\'t work: divide and conquer, starting from power.',
+      kid: 'Lost your keys? Check the last room you were in, then the one before that.',
+      body: `<ul class="list-disc pl-5 space-y-1"><li><b>Power first.</b> Is every rail right at the chip's pins (not just at the connector)?</li><li><b>Reset/boot pins</b> in the right state? (e.g. ESP32 EN high.)</li><li><b>Signals:</b> compare what you measure with what the schematic says should be there.</li><li><b>Heat:</b> a hot part usually means something is shorted or backwards.</li></ul>
+             <p>Still stuck? Post clear photos + schematic to r/AskElectronics, or show me first.</p>`,
+      tiles: [ { i: '⚡', l: 'Power', s: 'rails at the pins' }, { i: '🔁', l: 'Reset / boot', s: 'right levels?' }, { i: '📡', l: 'Signals', s: 'match the schematic?' }, { i: '🔥', l: 'Heat', s: 'short or reversed part' } ] },
+  ],
+  quiz: [
+    { q: 'Solder flows best when…', o: ['the board is still powered on', 'the pad and leg are hot', 'you melt it on the tip'], a: 1, why: 'Heat the joint itself. Solder flows toward heat and clean (fluxed) metal.' },
+    { q: 'The very first check on a new board:', o: ['upload the final firmware first', 'touch every chip to feel', 'VCC to GND not shorted'], a: 2, why: 'A short from VCC to GND can destroy parts the moment you plug in.' },
+    { q: 'Leaded 63/37 solder melts at…', o: ['183 °C', '217 °C', '350 °C'], a: 0, why: '183 °C. Lead-free SAC305 melts around 217–220 °C. 350 °C is an iron setting.' },
+    { q: 'A dull, balled-up joint is a…', o: ['great joint', 'cold joint', 'flux joint'], a: 1, why: 'The solder never wetted the pad properly. Reheat it with fresh flux.' },
+  ],
+  build: {
+    h: 'Practise, then bring up a board.',
+    need: 'soldering iron (temperature-controlled), solder + flux, a cheap practice kit or perfboard, multimeter',
+    steps: [
+      'Solder 10 through-hole joints on perfboard. Compare each with the good/bad list.',
+      'Solder a few 0805 parts (an SMD practice board is cheap).',
+      'Build your lesson 01 circuit on perfboard and solder it.',
+      'Do a full bring-up on it: inspect → continuity → limited power → measure.',
+      'When your ordered LED board arrives (lesson 19), bring it up the same way.',
+    ],
+    note: 'No temperature-controlled iron yet? It\'s the single best tool upgrade for this whole course.',
+  },
+  cards: [
+    { name: 'Bring-up checklist', sub: 'first power on a new board', color: 'bg-leaf', use: 'every new or repaired board.',
+      rules: 'inspect → VCC↔GND no beep → current-limited power → measure rails at pins → code one feature at a time. {{sf_solder}}' },
+  ],
+  source: { title: 'SparkFun: How to Solder (Through-Hole)', url: 'https://learn.sparkfun.com/tutorials/how-to-solder-through-hole-soldering', note: 'Photos of good and bad joints. Then watch a few SMD soldering videos before your first 0805.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>02 · The Multimeter</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 2,
+  steps: [
+    { t: 'Meet the meter', chip: 'x-ray glasses',
+      h: 'Electricity is invisible. A multimeter lets you see it.',
+      kid: 'A thermometer tells you how hot the soup is without tasting it. A multimeter tells you about electricity without touching it.',
+      body: `<p>One tool, four superpowers.{{sf_mm}} It measures the three things from lesson 01, push, squeeze and flow, plus a "beep" that tells you whether two points are connected.</p>
+             <p><b>Black probe always goes in COM.</b> The red probe moves depending on what you measure. Most of the time it sits in the jack marked <b>VΩmA</b>.{{sf_mm}}</p>
+             <p>On your own PCBs, this is the tool you'll reach for first when something doesn't work.</p>`,
+      tiles: [ { i: '⚡', l: 'V · volts', s: 'push' }, { i: '〰️', l: 'Ω · ohms', s: 'squeeze' }, { i: '💧', l: 'A · amps', s: 'flow' }, { i: '🔊', l: 'continuity', s: 'beep = connected' } ] },
+
+    { t: 'Measure voltage', chip: 'push',
+      h: 'Voltage: touch both sides, like a bridge across the part.',
+      kid: 'Voltage is always a difference, like asking how much taller you are than your friend. You have to touch two places to compare.',
+      body: `<p>1. Turn the dial to <b>V⎓</b> (the straight line means DC, what batteries and USB give).</p>
+             <p>2. Red probe on the + side, black on − / GND. The meter sits <b>across</b> the thing, side-by-side with it. This is called "in parallel".{{sf_mm}}</p>
+             <p>3. A minus sign on the screen just means the probes are swapped. Nothing breaks.</p>
+             <p><b>V~</b> (wavy line) is for AC, like a wall socket. Wall sockets are out of scope for this whole course: never probe mains.</p>`,
+      diagram: `<svg viewBox="0 0 400 240" class="w-full max-w-md">
+        <rect x="40" y="80" width="90" height="60" rx="8" fill="#cfe3b2" stroke="#1d1b18" stroke-width="2"/><text x="85" y="105" text-anchor="middle" font-size="12" font-weight="800">AA</text><text x="85" y="125" text-anchor="middle" font-size="11">+ ─ −</text>
+        <rect x="250" y="40" width="110" height="150" rx="14" fill="#fcdcbd" stroke="#1d1b18" stroke-width="2"/><rect x="265" y="55" width="80" height="34" rx="4" fill="#f9f2e8" stroke="#1d1b18"/><text x="305" y="78" text-anchor="middle" font-size="16" font-weight="800">1.58</text>
+        <text x="305" y="120" text-anchor="middle" font-size="12" font-weight="800">V⎓</text>
+        <circle cx="280" cy="165" r="7" fill="#1d1b18"/><text x="280" y="185" text-anchor="middle" font-size="9">COM</text>
+        <circle cx="330" cy="165" r="7" fill="#c0392b"/><text x="330" y="185" text-anchor="middle" font-size="9">VΩmA</text>
+        <path d="M60 80 C60 20, 330 10, 330 158" stroke="#c0392b" stroke-width="3" fill="none"/>
+        <path d="M110 140 C110 220, 280 220, 280 172" stroke="#1d1b18" stroke-width="3" fill="none"/>
+        <text x="200" y="232" text-anchor="middle" font-size="11" fill="#6f6961">meter goes ACROSS the battery</text></svg>` },
+
+    { t: 'Measure resistance', chip: 'squeeze',
+      h: 'Resistance: power OFF, and measure the part on its own.',
+      kid: "You can't measure how narrow a straw is while someone is drinking through it.",
+      body: `<p>In Ω mode the meter pushes its own tiny current through the part. If your circuit is also powered, the reading is wrong, and you can even hurt the meter.{{sf_mm}}</p>
+             <p>Measuring a part while it's still in a circuit is also misleading. The current sneaks around through other parts, so you get a lower number than the label says.</p>
+             <p>Don't pinch both probe tips with your fingers on big values. Your body is a resistor too!</p>`,
+      compare: { good: { t: 'Do', items: ['Power off, part out of circuit', 'Pick a range above the value you expect (or use auto-range)', 'Expect a few % off the label: that\'s tolerance'] },
+                 bad: { t: "Don't", items: ['Measure a powered circuit in Ω mode', 'Hold both metal tips in your fingers', 'Trust an in-circuit reading blindly'] } } },
+
+    { t: 'Continuity', chip: 'the beep',
+      h: 'Continuity: "are these two points connected?" Beep = yes.',
+      kid: "Like shouting through a tube. If your friend hears you, the tube isn't blocked.",
+      body: `<p>The 🔊 setting beeps when there's (almost) zero resistance between the probes.{{sf_mm}} Touch the probes together first to hear it.</p>
+             <p>You'll use this <b>constantly</b> once you have your own boards:</p>
+             <ul class="list-disc pl-5 space-y-1"><li>Is this jumper wire broken inside?</li><li>Did solder bridge two pins together? (beep = bad!)</li><li>Before first power-up: VCC to GND should <b>not</b> beep (lesson 20).</li></ul>`,
+      tiles: [ { i: '🧵', l: 'Broken wire?', s: 'no beep = broken' }, { i: '🫧', l: 'Solder bridge?', s: 'beep between pins = short' }, { i: '🛣️', l: 'PCB trace OK?', s: 'beep end to end' }, { i: '⚠️', l: 'VCC ↔ GND', s: 'must NOT beep' } ] },
+
+    { t: 'Measure current', chip: 'flow',
+      h: 'Current: the meter has to become part of the pipe.',
+      kid: 'To count cars on a road you have to stand on the road, not in the field beside it. The meter goes inside the loop.',
+      body: `<p>1. Break the circuit open at one spot.</p>
+             <p>2. Move the <b>red probe</b> to the <b>mA</b> jack (or the <b>10A</b> jack for big currents). Above about 200 mA on the mA jack you risk blowing the meter's fuse.{{sf_mm_i}}</p>
+             <p>3. Put the meter <b>in series</b>, so it fills the gap and current flows <i>through</i> it.</p>
+             <p class="pop-card bg-peach px-3 py-2"><b>#1 beginner mistake:</b> in current mode the meter is almost a plain wire. Touch it across a battery or a supply and you've made a short circuit.{{sf_mm_i}} Always move the red probe back to V when you're done.</p>`,
+      compare: { good: { t: 'Current: in series', items: ['Break the loop', 'Red probe → mA jack', 'Meter fills the gap', 'Move red back to V afterwards'] },
+                 bad: { t: 'Never', items: ['Current mode across a battery or supply', '>200 mA through the mA jack', 'Leave the red probe in the A jack'] } } },
+
+    { t: 'Which setting?', chip: 'practice',
+      h: 'Practice: pick the right dial setting for each job.',
+      body: `<p>This is exactly the decision you'll make at the bench. Choose a task, then tap the setting you'd use. You get feedback straight away.</p><p>Do all five. If any one surprises you, scroll back to its step.</p>`,
+      widget: 'meter' },
+  ],
+  quiz: [
+    { q: "To measure a battery's voltage, the meter goes…", o: ['across it, like a bridge', 'inside the loop, in series', "anywhere at all, it's fine"], a: 0, why: 'Voltage is a difference between two points, so the meter sits across (in parallel).' },
+    { q: 'Before measuring a resistor you should…', o: ['turn the circuit power up', 'turn the circuit power off', 'move red to 10A jack'], a: 1, why: "In Ω mode the meter uses its own current. Circuit power ruins the reading and can hurt the meter." },
+    { q: 'Current mode, probes straight across a 5 V supply. What happens?', o: ['the display shows 5 volts', 'nothing, the meter is protected', 'you create a short circuit'], a: 2, why: 'In current mode the meter is nearly a wire. Across a supply that is a short circuit, and the fuse (or worse) goes.' },
+    { q: 'Your new PCB is dead and you suspect a cracked trace. Use…', o: ['continuity beep mode', 'AC voltage mode', '10A current mode'], a: 0, why: 'Continuity tells you whether the two ends of the trace are still connected.' },
+  ],
+  build: {
+    h: 'Measure your lesson 01 circuit.',
+    need: 'multimeter, an AA battery, your LED + resistor circuit from lesson 01, a loose resistor, a jumper wire',
+    steps: [
+      'Battery: V⎓ across an AA. A fresh one often reads a bit above 1.5 V.',
+      'Board: V⎓ from your board\'s 5V pin to GND. USB is rarely exactly 5.00 V.',
+      'Resistor (unpowered!): Ω mode on a loose 220 Ω. Within ±5% (209–231 Ω) is normal.',
+      'Across the LED, then across the resistor (circuit ON). Write both numbers down. Do they add up to ≈ 5 V? (That\'s next lesson\'s big idea.)',
+      'Current: break the loop between resistor and LED, red probe → mA jack, meter in the gap. Compare with your lesson 01 maths (≈ 13.6 mA).',
+      'Move the red probe back to the V jack. Make it a habit.',
+      'Continuity: beep a jumper wire end to end.',
+    ],
+    note: 'Numbers a little off from the maths? Real parts have tolerance, and your LED may drop 1.9 V instead of 2.0. Being close is a pass.',
+  },
+  cards: [
+    { name: 'Multimeter', sub: 'your x-ray glasses', color: 'bg-sky', use: 'checking any voltage, part value, connection or current. It is the first step of every debug.',
+      rules: 'black in COM · V across · A in series (red → mA/10A jack) · Ω and beep with power OFF · move red back to V when done.' },
+  ],
+  source: { title: 'SparkFun: How to Use a Multimeter', url: 'https://learn.sparkfun.com/tutorials/how-to-use-a-multimeter', note: 'Photos of every setting, plus how to replace a blown fuse. ~25 min.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

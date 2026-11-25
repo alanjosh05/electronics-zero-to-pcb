@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>08 · MOSFETs</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 8,
+  steps: [
+    { t: 'Voltage-controlled tap', chip: 'what it is',
+      h: 'A MOSFET is a tap you open with voltage, not current.',
+      kid: "An automatic sliding door that opens when you stand on the mat. Just standing there costs you no effort.",
+      body: `<p>Three legs: <b>G</b>ate (the mat), <b>D</b>rain, <b>S</b>ource. The gate is insulated, like a tiny capacitor, so once it's charged it draws <b>almost no steady current</b>.</p>
+             <p>That makes MOSFETs ideal for big loads and for <b>PWM dimming</b>: motors, LED strips, heaters, fans.</p>
+             <p>An <b>N-channel</b> MOSFET as a low-side switch is wired just like the NPN from lesson 07: load on top, source to GND.</p>`,
+      tiles: [ { i: '🚪', l: 'Gate', s: 'the mat: voltage opens it' }, { i: '⬇️', l: 'Drain', s: 'from the load' }, { i: '⏚', l: 'Source', s: 'to GND (N-channel low-side)' }, { i: '🪶', l: 'Gate current', s: '≈ zero once charged' } ] },
+
+    { t: 'Logic-level trap', chip: 'the trap',
+      h: 'The trap: many MOSFETs need ~10 V on the gate to open fully.',
+      kid: 'A heavy door that only swings fully open for an adult. A kid on the mat only opens it a crack, and squeezing through gets you hot and stuck.',
+      body: `<p><b>V<sub>GS(th)</sub></b>, the threshold, is where the MOSFET <i>starts</i> to turn on. It is <b>not</b> fully on there. Half-open means high resistance, and that means heat.</p>
+             <p>Pick a <b>logic-level</b> part whose datasheet gives R<sub>DS(on)</sub> at a gate voltage you actually have (2.5 V, 3.3 V or 4.5 V).</p>
+             <ul class="list-disc pl-5 space-y-1"><li><b>AO3400A</b> (tiny SMD): threshold at most 1.45 V, so it's good from a 3.3 V ESP32 pin for small/medium loads.{{ao3400}}</li><li><b>IRLZ44N</b> (big through-hole): great from 5 V. At 3.3 V, makers report mixed results.</li></ul>`,
+      compare: { good: { t: 'Pick', items: ['"logic-level" in the title', 'R<sub>DS(on)</sub> specified at ≤ your pin voltage', 'AO3400A for 3.3 V boards'] },
+                 bad: { t: 'Avoid', items: ['IRF540-style parts driven from 3.3 V', 'judging by V<sub>GS(th)</sub> alone', 'a hot MOSFET = half-open = wrong part'] } } },
+
+    { t: 'The recipe', chip: 'two resistors',
+      h: 'Standard recipe: a gate resistor plus a pull-down.',
+      kid: 'A door with a spring that keeps it shut unless someone stands on the mat.',
+      body: `<p><b>Gate resistor, 100 Ω–1 kΩ</b>, pin → gate: it softens the inrush as the gate "capacitor" charges.</p>
+             <p><b>Pull-down, ~10 kΩ</b>, gate → source/GND: while your MCU boots, its pins float, and a floating gate can switch the load on by itself. The pull-down keeps it firmly OFF.</p>
+             <p>Plus, as always: a <b>flyback diode</b> across motors, relays and solenoids.{{jlc_fly}}</p>`,
+      diagram: `<svg viewBox="0 0 400 260" class="w-full max-w-md">
+        <text x="250" y="20" font-size="11" font-weight="800">+12 V strip / motor</text><line x1="270" y1="26" x2="270" y2="46" stroke="#1d1b18" stroke-width="3"/>
+        <rect x="245" y="46" width="50" height="40" rx="6" fill="#cfe3b2" stroke="#1d1b18" stroke-width="2"/><text x="270" y="71" text-anchor="middle" font-size="11" font-weight="800">LOAD</text>
+        <line x1="270" y1="86" x2="270" y2="120" stroke="#1d1b18" stroke-width="3"/>
+        <line x1="270" y1="120" x2="250" y2="120" stroke="#1d1b18" stroke-width="3"/><line x1="250" y1="115" x2="250" y2="185" stroke="#1d1b18" stroke-width="4"/>
+        <line x1="240" y1="120" x2="240" y2="180" stroke="#1d1b18" stroke-width="3"/>
+        <line x1="250" y1="180" x2="270" y2="180" stroke="#1d1b18" stroke-width="3"/><line x1="270" y1="180" x2="270" y2="230" stroke="#1d1b18" stroke-width="3"/>
+        <text x="270" y="248" text-anchor="middle" font-size="11" font-weight="800">GND</text>
+        <text x="278" y="114" font-size="10">D</text><text x="278" y="196" font-size="10">S</text><text x="226" y="160" font-size="10">G</text>
+        <line x1="60" y1="150" x2="100" y2="150" stroke="#1d1b18" stroke-width="3"/><rect x="100" y="140" width="60" height="20" rx="4" fill="#fcdcbd" stroke="#1d1b18" stroke-width="2"/><text x="130" y="155" text-anchor="middle" font-size="10" font-weight="800">220 Ω</text>
+        <line x1="160" y1="150" x2="240" y2="150" stroke="#1d1b18" stroke-width="3"/><text x="30" y="146" font-size="11" font-weight="800">PIN</text>
+        <line x1="195" y1="150" x2="195" y2="170" stroke="#1d1b18" stroke-width="2"/><rect x="185" y="170" width="20" height="40" rx="4" fill="#fcdcbd" stroke="#1d1b18" stroke-width="2"/><text x="182" y="195" text-anchor="end" font-size="10" font-weight="800">10 kΩ</text>
+        <line x1="195" y1="210" x2="195" y2="230" stroke="#1d1b18" stroke-width="2"/><line x1="195" y1="230" x2="270" y2="230" stroke="#1d1b18" stroke-width="2"/>
+        <text x="330" y="140" font-size="10" fill="#6f6961">N-MOSFET</text><text x="330" y="154" font-size="10" fill="#6f6961">low-side</text></svg>` },
+
+    { t: 'BJT or MOSFET?', chip: 'which one when',
+      h: 'Choosing your switch: a one-glance cheat sheet.',
+      kid: "Use a teaspoon for sugar and a shovel for sand. Both move stuff, but you'd pick by the job.",
+      body: `<p>When a pin needs to control something bigger, run through this list:</p>
+             <ul class="list-disc pl-5 space-y-1"><li>Tiny load (≤ ~20 mA), like one LED? → <b>pin directly</b> + resistor.</li><li>Small load, 5 V logic → <b>NPN</b> is fine.</li><li>Bigger load, 3.3 V logic, PWM → <b>logic-level N-MOSFET</b>.</li><li>Must switch the + side → <b>P-MOSFET</b> (or a load-switch IC).</li><li>Mains or isolation → <b>relay</b> (lesson 11).</li></ul>`,
+      tiles: [ { i: '💡', l: '≤ 20 mA', s: 'pin + resistor' }, { i: '🔔', l: 'small, 5 V', s: 'NPN' }, { i: '🌈', l: 'LED strip / motor', s: 'logic-level N-MOSFET' }, { i: '🔌', l: 'separate/isolated circuit', s: 'relay' } ] },
+  ],
+  quiz: [
+    { q: 'Steady current into a MOSFET gate is…', o: ['roughly twenty milliamps, always', 'almost none at all', 'exactly the load current'], a: 1, why: 'The gate is insulated, like a small capacitor. It draws current only while charging.' },
+    { q: 'V<sub>GS(th)</sub> is the gate voltage where it…', o: ['starts turning on', 'is fully on', 'will burn out'], a: 0, why: 'Threshold = just starting. Check R<sub>DS(on)</sub> at your actual gate voltage.' },
+    { q: 'The 10 kΩ gate-to-GND resistor…', o: ['makes it switch much faster', 'raises the gate voltage higher', 'keeps it off at boot'], a: 2, why: 'MCU pins float during reset/boot. The pull-down holds the gate low so the load stays off.' },
+    { q: 'A 12 V LED strip from an ESP32 pin needs…', o: ['the ESP32 pin directly', 'a logic-level N MOSFET', 'a small 2N3904 transistor'], a: 1, why: 'Big current, 3.3 V logic, PWM dimming: the textbook job for a logic-level N-MOSFET.' },
+  ],
+  build: {
+    h: 'Fade something with a MOSFET and PWM.',
+    need: 'a logic-level N-MOSFET (IRLZ44N for 5 V boards, AO3400 breakout for 3.3 V), 220 Ω, 10 kΩ, an LED + resistor or a small motor (+ diode)',
+    steps: [
+      'Find the G-D-S pinout in YOUR MOSFET\'s datasheet.',
+      'Wire the recipe: pin → 220 Ω → gate, 10 kΩ gate → GND, load from + to drain, source → GND.',
+      'Upload the "Fade" example on a PWM pin. The load dims up and down.',
+      'Feel the MOSFET after a minute. Cool = fully on. Warm = check that it\'s really logic-level.',
+      'Motor? Add a diode across it (stripe to +) and give it its own supply, with GNDs connected.',
+    ],
+  },
+  cards: [
+    { name: 'N-channel MOSFET (logic-level)', sub: 'the big tap', color: 'bg-sky', use: 'switching or PWM-dimming big loads (motors, LED strips, fans) from 3.3/5 V pins.',
+      rules: 'R<sub>DS(on)</sub> rated at ≤ your pin voltage · 100 Ω–1 kΩ gate resistor · 10 kΩ gate pull-down · flyback diode on coils · AO3400A for 3.3 V. {{ao3400}}' },
+  ],
+  source: { title: 'SparkFun: Transistors (MOSFET sections)', url: 'https://learn.sparkfun.com/tutorials/transistors', note: 'Then open the AO3400A or IRLZ44N datasheet and find R<sub>DS(on)</sub> and V<sub>GS(th)</sub> yourself.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

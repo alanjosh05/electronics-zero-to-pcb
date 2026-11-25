@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>07 · Transistors</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 7,
+  steps: [
+    { t: 'Why transistors', chip: 'the problem',
+      h: 'A microcontroller pin is a whisper. Motors need a shout.',
+      kid: "You can't lift a car, but you can turn the key that starts its engine.",
+      body: `<p>An Arduino Uno pin must never exceed <b>40 mA</b>, and about 20 mA is comfortable.{{ard_uno}} A buzzer, small motor or a strip of LEDs wants far more.</p>
+             <p>A <b>transistor</b> is an electrically controlled tap. A tiny current from your pin opens a much bigger flow from a separate supply.{{sf_tr}}</p>
+             <p>This is the most important "which part when" rule in the course: <b>if a pin can't drive it, put a transistor in between.</b></p>`,
+      tiles: [ { i: '🧠', l: 'Pin', s: 'a few mA' }, { i: '🚰', l: 'Transistor', s: 'the tap' }, { i: '⚙️', l: 'Load', s: '100s of mA from its own supply' } ], tilesFlow: true },
+
+    { t: 'NPN switch', chip: 'how it works',
+      h: 'NPN: a little current into the base opens the collector → emitter tap.',
+      kid: 'A big water tap with a feather-light handle. A tiny push on the handle lets a lot of water rush through.',
+      body: `<p>Three legs: <b>B</b>ase (handle), <b>C</b>ollector (water in), <b>E</b>mitter (water out).{{sf_tr}}</p>
+             <p>The classic <b>low-side switch</b>: load from + to the collector, emitter to GND, pin → resistor → base. About 0.7 V sits across base → emitter (it's a diode inside!).</p>
+             <p>Small parts like the 2N3904 / 2N2222 / BC547 handle small loads. Check the datasheet's max collector current. <b>Pin order differs between part numbers</b>, so always check the datasheet drawing (lesson 15).</p>`,
+      diagram: `<svg viewBox="0 0 400 260" class="w-full max-w-md">
+        <text x="250" y="22" font-size="11" font-weight="800">+5 V (or motor supply)</text><line x1="250" y1="28" x2="250" y2="50" stroke="#1d1b18" stroke-width="3"/>
+        <rect x="225" y="50" width="50" height="40" rx="6" fill="#cfe3b2" stroke="#1d1b18" stroke-width="2"/><text x="250" y="75" text-anchor="middle" font-size="11" font-weight="800">LOAD</text>
+        <line x1="250" y1="90" x2="250" y2="120" stroke="#1d1b18" stroke-width="3"/>
+        <circle cx="240" cy="150" r="32" fill="#f9f2e8" stroke="#1d1b18" stroke-width="2"/>
+        <line x1="225" y1="130" x2="225" y2="170" stroke="#1d1b18" stroke-width="4"/>
+        <line x1="225" y1="140" x2="250" y2="120" stroke="#1d1b18" stroke-width="3"/><line x1="225" y1="160" x2="250" y2="180" stroke="#1d1b18" stroke-width="3"/>
+        <polygon points="250,180 238,178 245,170" fill="#1d1b18"/>
+        <line x1="250" y1="180" x2="250" y2="225" stroke="#1d1b18" stroke-width="3"/><text x="250" y="242" text-anchor="middle" font-size="11" font-weight="800">GND</text>
+        <line x1="60" y1="150" x2="110" y2="150" stroke="#1d1b18" stroke-width="3"/><rect x="110" y="140" width="60" height="20" rx="4" fill="#fcdcbd" stroke="#1d1b18" stroke-width="2"/><text x="140" y="155" text-anchor="middle" font-size="10" font-weight="800">1 kΩ</text>
+        <line x1="170" y1="150" x2="225" y2="150" stroke="#1d1b18" stroke-width="3"/>
+        <text x="40" y="146" font-size="11" font-weight="800">PIN</text>
+        <text x="262" y="124" font-size="10">C</text><text x="205" y="146" font-size="10">B</text><text x="262" y="190" font-size="10">E</text>
+        <path d="M250 50 V225" stroke="#d0683a" stroke-width="5" class="flow" fill="none" opacity=".7"/></svg>` },
+
+    { t: 'Base resistor', chip: 'the maths',
+      h: 'Always put a resistor on the base, and size it so the tap opens fully.',
+      kid: "Turn the tap handle firmly, but don't rip it off.",
+      body: `<p>Base → emitter behaves like a diode, so with no resistor your pin would push far too much current into it.</p>
+             <p>For a hard, fully-on switch, aim for a base current of about <b>1/10 of the load current</b>. Then R = (V<sub>pin</sub> − 0.7) ÷ I<sub>base</sub>. Many makers simply use <b>1 kΩ</b> for small loads from 5 V logic.</p>
+             <p>Try the calculator. Notice when it tells you to switch to a MOSFET.</p>`,
+      widget: 'basecalc' },
+
+    { t: 'NPN vs PNP', chip: 'which one when',
+      h: 'NPN switches the ground side; PNP switches the + side.',
+      kid: "You can stop a water slide at the top or at the bottom. Either way, nobody slides.",
+      body: `<p><b>NPN, low-side</b> (load on top, transistor to GND): the default. It's easy to drive from a pin.</p>
+             <p><b>PNP, high-side</b> (transistor between + and load): useful when the load must stay connected to ground. It's trickier to drive when the load voltage is higher than the pin voltage.</p>
+             <p>For anything above roughly 100–200 mA, or for 3.3 V boards, you'll usually prefer a <b>MOSFET</b>. That's next lesson.</p>`,
+      compare: { good: { t: 'BJT (NPN) is great for', items: ['small loads: buzzers, a few LEDs, a relay coil', '5 V logic', 'cheap, through-hole, breadboard-friendly'] },
+                 bad: { t: 'Reach for a MOSFET when', items: ['the load is hundreds of mA or more', 'your pin is 3.3 V', 'you PWM (dim) something big'] } } },
+  ],
+  quiz: [
+    { q: 'The transistor leg you drive from the microcontroller is the…', o: ['collector', 'base', 'emitter'], a: 1, why: 'The base is the "handle". Pin → resistor → base.' },
+    { q: 'In an NPN low-side switch, the emitter connects to…', o: ['the ground rail', 'the motor load', 'the GPIO pin'], a: 0, why: 'Load between + and collector, emitter to GND.' },
+    { q: 'Load needs 100 mA. Base current should be about…', o: ['0.1 mA', '10 mA', '100 mA'], a: 1, why: 'Rule of thumb for a hard switch: about 1/10 of the load = 10 mA.' },
+    { q: 'Why does the base need a resistor?', o: ['to make it faster', 'to raise the voltage', 'to protect the pin'], a: 2, why: 'Base-emitter is a diode. Without a resistor the pin would source far too much current.' },
+  ],
+  build: {
+    h: 'Let a pin switch a load through an NPN.',
+    need: 'NPN (2N2222, 2N3904 or BC547), 1 kΩ, LED + 220 Ω (or a small buzzer), your board',
+    steps: [
+      'Look up YOUR transistor\'s pinout in its datasheet (E-B-C order varies).',
+      'LED + 220 Ω from 5V down to the collector. Emitter → GND.',
+      'Pin 8 → 1 kΩ → base.',
+      'Upload the Blink example using pin 8. The LED blinks, but the pin only supplies ~4 mA.',
+      'Measure the base current and collector current with your meter (lesson 02). Compare them.',
+      'Bonus: swap the LED for a buzzer. Same circuit, new load.',
+    ],
+    note: 'Driving a motor or relay? Add a flyback diode across it (lesson 06 / 11).',
+  },
+  cards: [
+    { name: 'NPN transistor (BJT)', sub: 'the tiny tap', color: 'bg-sky', use: 'a pin needs to switch more current than it can give (buzzer, relay coil, a few LEDs).',
+      rules: 'low-side: load → C, E → GND · base resistor always · I_base ≈ I_load ÷ 10 · check pinout in datasheet · coils need a flyback diode. {{sf_tr}}' },
+  ],
+  source: { title: 'SparkFun: Transistors', url: 'https://learn.sparkfun.com/tutorials/transistors', note: 'Read the "Applications I: Switches" page first; the rest is bonus. ~30 min.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

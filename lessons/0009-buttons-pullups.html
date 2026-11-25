@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>09 · Buttons & Pull-ups</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 9,
+  steps: [
+    { t: 'Floating pins', chip: 'the problem',
+      h: 'An input pin connected to nothing reads random junk.',
+      kid: "A flag that isn't tied down flaps around in the wind, pointing every which way.",
+      body: `<p>Input pins are extremely sensitive: they barely draw any current. If nothing holds them HIGH or LOW, they "float" and pick up noise from your hand, nearby wires, anything.{{sf_pu}}</p>
+             <p>So a button wired from a pin to GND, with nothing else, works when pressed (LOW) and gives garbage when released.</p>`,
+      tiles: [ { i: '🎏', l: 'Floating', s: 'random HIGH/LOW' }, { i: '⬆️', l: 'Pull-up', s: 'held HIGH until pressed' }, { i: '⬇️', l: 'Pull-down', s: 'held LOW until pressed' } ], tilesFlow: false },
+
+    { t: 'Pull-up resistor', chip: 'the fix',
+      h: 'A pull-up gently holds the pin HIGH; the button yanks it LOW.',
+      kid: 'A door with a spring. It stays shut by itself, and only opens while you push it.',
+      body: `<p>Put a resistor from the pin to VCC (the pull-up) and the button from the pin to GND.{{sf_pu}}</p>
+             <ul class="list-disc pl-5 space-y-1"><li>Released → pin reads <b>HIGH</b></li><li>Pressed → pin reads <b>LOW</b> (yes, upside-down: "active low")</li></ul>
+             <p><b>Value:</b> ~10 kΩ is the classic choice.{{sf_pu}} Most microcontrollers have one built in: <code>pinMode(pin, INPUT_PULLUP)</code>.{{ard_dig}} No extra part needed!</p>`,
+      diagram: `<svg viewBox="0 0 400 260" class="w-full max-w-md">
+        <text x="200" y="20" text-anchor="middle" font-size="11" font-weight="800">3.3 V / 5 V</text><line x1="200" y1="26" x2="200" y2="50" stroke="#1d1b18" stroke-width="3"/>
+        <rect x="188" y="50" width="24" height="50" rx="4" fill="#fcdcbd" stroke="#1d1b18" stroke-width="2"/><text x="222" y="80" font-size="11" font-weight="800">10 kΩ</text>
+        <line x1="200" y1="100" x2="200" y2="160" stroke="#1d1b18" stroke-width="3"/><line x1="200" y1="130" x2="80" y2="130" stroke="#d0683a" stroke-width="3"/>
+        <text x="40" y="134" font-size="11" font-weight="800" fill="#d0683a">PIN</text>
+        <circle cx="200" cy="165" r="5" fill="#1d1b18"/><circle cx="200" cy="205" r="5" fill="#1d1b18"/>
+        <line x1="205" y1="168" x2="225" y2="200" stroke="#1d1b18" stroke-width="3"/><text x="235" y="190" font-size="10">button</text>
+        <line x1="200" y1="210" x2="200" y2="235" stroke="#1d1b18" stroke-width="3"/><text x="200" y="252" text-anchor="middle" font-size="11" font-weight="800">GND</text>
+        <text x="290" y="120" font-size="10" fill="#6f6961">released → HIGH</text><text x="290" y="136" font-size="10" fill="#6f6961">pressed → LOW</text></svg>` },
+
+    { t: 'Bounce', chip: 'the gotcha',
+      h: 'Buttons bounce: one press can look like five.',
+      kid: 'Drop a ball and it bounces a few times before it settles down.',
+      body: `<p>The metal contacts inside a button chatter for a few milliseconds. Your fast microcontroller sees every one of those bounces.</p>
+             <p><b>Fixes:</b></p>
+             <ul class="list-disc pl-5 space-y-1"><li><b>Software:</b> ignore changes for ~50 ms after the first one. That's the Arduino "Debounce" example.{{ard_deb}}</li><li><b>Hardware:</b> a small RC filter (resistor + capacitor, lesson 05) smooths the edge.</li></ul>`,
+      compare: { good: { t: 'Do', items: ['INPUT_PULLUP + button to GND', 'treat LOW as "pressed"', 'debounce in code (or RC)'] },
+                 bad: { t: "Don't", items: ['leave an input floating', 'button straight to VCC with no resistor anywhere', 'count raw edges as presses'] } } },
+
+    { t: 'Kinds of switches', chip: 'which one when',
+      h: 'Which switch when?',
+      kid: 'Doorbells, light switches, fridge door sensors: all switches, each built for a different job.',
+      body: `<p>All of these are just "connect / disconnect", and all of them need a pull-up or pull-down when you read them with a pin.</p>
+             <p>On your PCBs you'll most often use small <b>tactile buttons</b> (a reset button, a "talk" button on your voice board) and a <b>slide switch</b> for battery power.</p>`,
+      tiles: [ { i: '🔘', l: 'Tactile button', s: 'momentary: press = on' }, { i: '🎚️', l: 'Slide / toggle', s: 'stays where you put it (power)' }, { i: '🧲', l: 'Reed switch', s: 'closed by a magnet (door sensor)' }, { i: '🛑', l: 'Limit switch', s: 'detects end of travel' } ] },
+  ],
+  quiz: [
+    { q: 'Pull-up + button to GND. While pressed, the pin reads…', o: ['HIGH', 'LOW', 'random'], a: 1, why: 'Pressing connects the pin straight to GND, which overpowers the gentle pull-up.' },
+    { q: 'A typical external pull-up value is…', o: ['10 kΩ', '10 Ω', '10 MΩ'], a: 0, why: 'About 10 kΩ: strong enough to hold the pin, weak enough to waste little current.' },
+    { q: 'An input pin connected to nothing reads…', o: ['always LOW', 'always HIGH', 'random noise'], a: 2, why: "It floats and picks up noise. That's why we pull it up or down." },
+    { q: 'One press is counted four times. That is…', o: ['contact bounce', 'pin overload', 'floating ground'], a: 0, why: 'Mechanical contacts bounce for a few ms. Debounce in software or with an RC filter.' },
+  ],
+  build: {
+    h: 'Read a button properly.',
+    need: 'a tactile button, your board, USB serial monitor',
+    steps: [
+      'Button between pin 2 and GND. Nothing else.',
+      'Code: <code>pinMode(2, INPUT_PULLUP);</code> then print <code>digitalRead(2)</code> to Serial in a loop.',
+      'Press and release. 1 = released, 0 = pressed. Upside-down logic confirmed.',
+      'Change to <code>INPUT</code> (no pull-up). Don\'t press, just wave your hand near the wire. Random flips = floating!',
+      'Count presses with and without the Arduino Debounce example. See the difference.',
+    ],
+  },
+  cards: [
+    { name: 'Pull-up / pull-down resistor', sub: 'the spring on the door', color: 'bg-peach', use: 'every button, switch and open-drain line (I²C!) read by a pin.',
+      rules: '~10 kΩ external, or INPUT_PULLUP internal · pull-up + button to GND = active-low. {{sf_pu}}' },
+    { name: 'Push button', sub: 'momentary contact', color: 'bg-leaf', use: 'user input: reset, boot, "talk", menu.',
+      rules: 'always with a pull-up/down · debounce (≈50 ms in code, or RC). {{ard_deb}}' },
+  ],
+  source: { title: 'SparkFun: Pull-up Resistors', url: 'https://learn.sparkfun.com/tutorials/pull-up-resistors', note: 'Short and sweet, including how to calculate a pull-up value. ~10 min.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

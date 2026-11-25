@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>12 · Power Supplies</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 12,
+  steps: [
+    { t: 'Why regulate', chip: 'the problem',
+      h: 'Chips want one exact voltage. Batteries and USB are never exact.',
+      kid: "A water tower keeps the pressure steady for every house, however full or empty the river is.",
+      body: `<p>Your ESP32 wants a steady <b>3.3 V</b>. But USB gives "about 5 V", and a lithium cell slides from about 4.2 V full down to about 3 V empty.</p>
+             <p>A <b>voltage regulator</b> takes a messy input and gives one fixed output. Every PCB you design will start with this block.</p>`,
+      tiles: [ { i: '🔌', l: 'USB 5 V', s: '≈ 4.7–5.2 V' }, { i: '🔋', l: 'Li-ion', s: '≈ 4.2 → 3.0 V' }, { i: '🎛️', l: 'Regulator', s: 'the water tower' }, { i: '🧠', l: '3.3 V chip', s: 'happy' } ], tilesFlow: true },
+
+    { t: 'LDO', chip: 'linear',
+      h: 'A linear regulator (LDO) burns the extra voltage off as heat.',
+      kid: 'Letting water out through a half-closed valve: simple and quiet, but the extra pressure is just wasted.',
+      body: `<p>Heat in an LDO = <b>(V<sub>in</sub> − V<sub>out</sub>) × I</b>. 5 V → 3.3 V at 500 mA wastes 0.85 W.{{lcsc_ldo}}</p>
+             <p><b>Dropout</b> is how much headroom it needs above its output. The very common <b>AMS1117-3.3</b> needs roughly 1.1–1.3 V, so it's fine from USB 5 V but <b>not</b> from a lithium cell.{{lcsc_ldo}} For batteries, pick a true low-dropout part (a few hundred mV).</p>
+             <p>LDOs need input and output capacitors. Copy the values from the datasheet exactly.</p>`,
+      compare: { good: { t: 'LDO shines when', items: ['small drop (5 → 3.3 V)', 'modest current (≲ a few hundred mA)', 'you want quiet, clean power (audio, ADC)'] },
+                 bad: { t: 'LDO struggles when', items: ['big drop (12 → 3.3 V)', 'big current', 'input is close to output (needs more headroom than you have)'] } } },
+
+    { t: 'Buck & boost', chip: 'switching',
+      h: 'Switching regulators chop and refill, so they waste far less.',
+      kid: 'Instead of a leaky valve, a bucket brigade: scoop, pour, scoop, pour. Hardly a drop spilled.',
+      body: `<p>A <b>buck</b> converter steps voltage <b>down</b>, a <b>boost</b> steps it <b>up</b>, and a buck-boost does both. They switch very fast and store energy in an inductor (lesson 11), so they waste far less than an LDO with a big drop.{{lcsc_ldo}}</p>
+             <p>The trade-offs: more parts, more careful PCB layout, and some switching noise. Compare the two with the sliders →</p>`,
+      widget: 'ldo' },
+
+    { t: 'Choose', chip: 'which one when',
+      h: 'Picking your power block.',
+      kid: 'Stairs for one floor, a lift for ten floors. Pick by how far you need to go.',
+      body: `<p>And for USB-C power on your own boards: a device that wants 5 V must put a <b>5.1 kΩ resistor from CC1 to GND and another from CC2 to GND</b>, separately. Without them, a USB-C charger gives you <b>nothing</b>.{{dk_usbc}}</p>`,
+      tiles: [ { i: '🔌', l: 'USB 5 V → 3.3 V, small load', s: 'LDO (e.g. AMS1117-3.3)' }, { i: '⚡', l: '12 V → 3.3 V or > ~0.5 A', s: 'buck converter' }, { i: '🔋', l: 'Li-ion → 3.3 V', s: 'very-low-dropout LDO or buck-boost' }, { i: '⬆️', l: '3.7 V → 5 V', s: 'boost converter' } ] },
+  ],
+  quiz: [
+    { q: 'An LDO dropping 5 V → 3.3 V at 200 mA makes about…', o: ['0.34 W', '0.66 W', '1.00 W'], a: 0, why: '(5 − 3.3) × 0.2 = 0.34 W of heat.' },
+    { q: 'Big voltage drop and big current: pick…', o: ['an LDO regulator', 'a buck converter', 'a voltage divider'], a: 1, why: 'A buck wastes far less power than an LDO on a big drop. A divider can\'t power anything.' },
+    { q: 'Why is an AMS1117-3.3 a poor fit for a single Li-ion cell?', o: ['it only outputs 5 volts', 'it needs a big inductor', 'its dropout is too big'], a: 2, why: 'It needs about 1.1–1.3 V of headroom, but a Li-ion cell is only ~0.4–0.9 V above 3.3 V.' },
+    { q: 'The main downside of buck converters is…', o: ['more noise and parts', 'much lower efficiency overall', 'cannot supply any current'], a: 0, why: 'They are efficient, but noisier and need more parts and careful layout.' },
+  ],
+  build: {
+    h: 'Find the power block on your own board.',
+    need: 'your Arduino/ESP32 dev board, multimeter, phone camera (to zoom on markings)',
+    steps: [
+      'Find the regulator near the USB/power jack (often a 3- or 4-leg part, like SOT-223).',
+      'Photograph its marking and search it. Is it an LDO or a buck? What dropout?',
+      'Measure the 3V3 pin with your meter. How close to 3.30 V?',
+      'Spot the capacitors on each side of it. Do they match the datasheet\'s typical application?',
+      'Use the widget: if your project draws 300 mA from USB, is an LDO OK?',
+    ],
+  },
+  cards: [
+    { name: 'LDO regulator', sub: 'the quiet valve', color: 'bg-leaf', use: 'small drops at modest current, e.g. USB 5 V → 3.3 V, and quiet power for audio/ADC.',
+      rules: 'heat = (Vin − Vout) × I · check dropout (AMS1117 ≈ 1.1–1.3 V) · in/out caps from datasheet. {{lcsc_ldo}}' },
+    { name: 'Buck / boost converter', sub: 'the bucket brigade', color: 'bg-sky', use: 'big drops, big currents, battery boards (buck down, boost up).',
+      rules: 'efficient but noisy · follow the datasheet layout exactly · inductor + caps close to the chip.' },
+    { name: 'USB-C power (sink)', sub: '5.1 kΩ × 2', color: 'bg-peach', use: 'any board powered from a USB-C port.',
+      rules: '5.1 kΩ CC1→GND and CC2→GND, separate resistors · without them C-to-C chargers give 0 V. {{dk_usbc}}' },
+  ],
+  source: { title: 'LCSC: AMS1117 Voltage Regulator Guide', url: 'https://www.lcsc.com/blog/ams1117-voltage-regulator-complete-guide/', note: 'Specs, dropout, heat maths and when to choose a buck instead. Then skim the AMS1117 datasheet.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

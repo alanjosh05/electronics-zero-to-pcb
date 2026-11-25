@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>04 · Power, Heat & Batteries</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 4,
+  steps: [
+    { t: 'Power = push × flow', chip: 'watts',
+      h: 'Power tells you how much work (or heat) happens every second.',
+      kid: 'Pushing a friend on a swing: a big push, done many times a second, is a lot of power.',
+      body: `<p><b>Power</b> is measured in <b>watts (W)</b>:{{sf_pwr}}</p>
+             <div class="pop-card px-4 py-3 text-center text-lg font-extrabold">P = V × I</div>
+             <ul class="list-disc pl-5 space-y-1"><li>Your LED: 2 V × 0.015 A = <b>0.03 W</b> (30 mW)</li><li>A phone charging at 5 V × 2 A = <b>10 W</b></li></ul>
+             <p>Mix it with Ohm's law and you get <b>P = I² × R</b>, the heat inside a resistor.</p>`,
+      tiles: [ { i: '💡', l: 'LED', s: '≈ 0.03 W' }, { i: '📟', l: 'ESP32 + Wi-Fi', s: 'a fraction of a watt' }, { i: '📱', l: 'Phone charging', s: '≈ 10 W' }, { i: '🔥', l: 'Kettle', s: 'thousands of W' } ] },
+
+    { t: 'Heat & ratings', chip: 'heat',
+      h: 'Every part turns some power into heat, and every part has a heat limit.',
+      kid: 'Rub your hands together fast and they get warm. Squeezing current through a resistor does the same thing.',
+      body: `<p>Resistors are sold with a <b>power rating</b>. Ordinary through-hole ones are often ¼ W, and tiny surface-mount ones are less.</p>
+             <p><b>Rule of thumb:</b> choose a part rated for at least <b>2×</b> the heat you calculate.{{lme_led}}</p>
+             <p>Lesson 01's resistor: 3 V × 0.0136 A ≈ <b>0.04 W</b>, so a ¼ W part is relaxed. 😎 Later, regulators (lesson 12) are where heat really matters.</p>`,
+      compare: { good: { t: 'Safe', items: ['Calculate P = V × I for each resistor', 'Rated ≥ 2× that number', 'Feel for warmth on first power-up'] },
+                 bad: { t: 'Smoke', items: ['Tiny SMD resistor dropping lots of volts', 'Part rated exactly at its heat', 'Ignoring a part that is too hot to touch'] } } },
+
+    { t: 'Batteries', chip: 'fuel tanks',
+      h: 'mAh is the size of the fuel tank.',
+      kid: 'A juice box says how much juice is inside. mAh says how much electricity is inside.',
+      body: `<p>A battery has two numbers:{{sf_bat}}</p>
+             <ul class="list-disc pl-5 space-y-1"><li><b>Voltage</b> = how hard it pushes (AA ≈ 1.5 V, a lithium-ion cell ≈ 3.7 V nominal).</li><li><b>Capacity</b> in <b>mAh</b> = how long it can keep flowing. 2000 mAh ≈ 2000 mA for 1 h, or 100 mA for 20 h.</li></ul>
+             <p><b>Runtime ≈ capacity ÷ current</b>. Real life gives a bit less.</p>
+             <p class="pop-card bg-peach px-3 py-2">⚠️ Lithium cells can catch fire if shorted, over-charged or punctured. Use a proper charger IC/module with protection, and never short a cell.{{sf_bat}}</p>`,
+      widget: 'battery' },
+
+    { t: 'For your devices', chip: 'design thinking',
+      h: 'For a battery gadget, current is the budget you spend.',
+      kid: 'Pocket money: if you spend a little every day, it lasts all month.',
+      body: `<p>When your voice-app board runs on a battery, every mA counts:</p>
+             <ul class="list-disc pl-5 space-y-1"><li>Radios (Wi-Fi, Bluetooth) are the hungriest part.</li><li>Microcontrollers can <b>sleep</b> and use a tiny fraction of their awake current.</li><li>An "always on" LED alone can drain a coin cell in days.</li></ul>
+             <p>Estimating power on paper <i>before</i> picking a battery is a habit you'll use on every PCB.</p>`,
+      tiles: [ { i: '📡', l: 'Radio on', s: 'big spender' }, { i: '😴', l: 'Deep sleep', s: 'tiny trickle' }, { i: '💡', l: 'Status LED', s: 'small but constant' }, { i: '🧮', l: 'Budget', s: 'average mA × hours' } ], tilesFlow: false },
+  ],
+  quiz: [
+    { q: '5 V at 0.5 A is how many watts?', o: ['0.1 W', '2.5 W', '10 W'], a: 1, why: 'P = V × I = 5 × 0.5 = 2.5 W.' },
+    { q: 'A 1000 mAh battery powers a 50 mA gadget for about…', o: ['50 hours', '2 hours', '20 hours'], a: 2, why: '1000 ÷ 50 = 20 hours (a bit less in reality).' },
+    { q: 'A resistor will turn 0.2 W into heat. You pick…', o: ['a 1/8 W part', 'a 1/4 W part', 'a 1/2 W part'], a: 2, why: 'With the 2× rule you want ≥ 0.4 W, so a ½ W part.' },
+    { q: 'mAh on a battery measures its…', o: ['voltage push', 'stored charge', 'inner resistance'], a: 1, why: 'mAh is capacity: how much charge it holds, i.e. how long it can keep supplying current.' },
+  ],
+  build: {
+    h: 'Read real labels and do the maths.',
+    need: 'your multimeter, the LED circuit, a phone charger and/or power bank (just read the labels)',
+    steps: [
+      'Measure V and I of your LED circuit (lesson 02). Work out P for the LED and for the resistor.',
+      'Touch the resistor gently after a minute. Cool? That matches your ~0.04 W maths.',
+      'Read your phone charger label: "Output 5V ⎓ 2A" → how many watts?',
+      'Read a power bank: mAh and Wh. Check Wh ≈ mAh × 3.7 V ÷ 1000.',
+      'Use the battery widget: how long would your LED circuit run on a 2000 mAh battery?',
+    ],
+  },
+  cards: [
+    { name: 'Power rating', sub: 'P = V × I', color: 'bg-peach', use: 'choosing resistors, regulators and anything that gets warm.',
+      rules: 'calculate the heat · choose a rating ≥ 2× it · hot to touch = redesign.' },
+    { name: 'Battery', sub: 'push + fuel tank', color: 'bg-leaf', use: 'portable devices. Pick the voltage first, then the mAh for your runtime.',
+      rules: 'runtime ≈ mAh ÷ mA · Li-ion ≈ 3.7 V nominal · Li-ion needs a proper charger + protection. {{sf_bat}}' },
+  ],
+  source: { title: 'SparkFun: Electric Power', url: 'https://learn.sparkfun.com/tutorials/electric-power', note: 'Power, energy and heat explained with real numbers. Then skim "Battery Technologies". ~20 min.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

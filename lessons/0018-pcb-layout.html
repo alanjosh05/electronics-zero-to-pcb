@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>18 · PCB Layout</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 18,
+  steps: [
+    { t: 'The sandwich', chip: 'what a PCB is',
+      h: 'A PCB is a sandwich: copper roads on a fibreglass board.',
+      kid: 'A city with roads on two levels, and little elevators (vias) between them.',
+      body: `<p>Layers, top to bottom:{{sf_pcb}}</p>
+             <ul class="list-disc pl-5 space-y-1"><li><b>Silkscreen</b>: printed labels (R1, +, pin 1 dots).</li><li><b>Solder mask</b>: the green (or any colour) coat that keeps solder off the roads.</li><li><b>Copper</b>: the traces and pads. A <b>2-layer</b> board has copper top and bottom.</li><li><b>FR4</b>: the fibreglass core, usually 1.6 mm thick.</li></ul>
+             <p><b>Vias</b> are plated holes that connect top copper to bottom copper.</p>`,
+      diagram: `<svg viewBox="0 0 470 220" class="w-full max-w-md">
+        <rect x="40" y="40" width="320" height="10" fill="#f9f2e8" stroke="#1d1b18"/><text x="370" y="49" font-size="10">silkscreen</text>
+        <rect x="40" y="50" width="320" height="14" fill="#7fc278" stroke="#1d1b18"/><text x="370" y="61" font-size="10">solder mask</text>
+        <rect x="40" y="64" width="320" height="10" fill="#d97a4f" stroke="#1d1b18"/><text x="370" y="73" font-size="10">copper (top)</text>
+        <rect x="40" y="74" width="320" height="70" fill="#e9d3a8" stroke="#1d1b18"/><text x="200" y="114" text-anchor="middle" font-size="12" font-weight="800">FR4 core ≈ 1.6 mm</text>
+        <rect x="40" y="144" width="320" height="10" fill="#d97a4f" stroke="#1d1b18"/><text x="370" y="153" font-size="10">copper (bottom)</text>
+        <rect x="40" y="154" width="320" height="14" fill="#7fc278" stroke="#1d1b18"/>
+        <rect x="270" y="64" width="14" height="90" fill="#d97a4f" stroke="#1d1b18"/><text x="277" y="190" text-anchor="middle" font-size="10" font-weight="700">via</text>
+        <line x1="277" y1="168" x2="277" y2="180" stroke="#1d1b18"/></svg>` },
+
+    { t: 'Placement first', chip: 'the order',
+      h: 'Place parts first. Good placement makes routing easy.',
+      kid: 'Arrange the furniture before you lay the carpet runners between rooms.',
+      body: `<p>Experienced designers spend most of their time on placement. A sensible order:</p>`,
+      tiles: [ { i: '🔌', l: 'Connectors', s: 'at the edges, where cables go' }, { i: '🔋', l: 'Power block', s: 'near the power input' }, { i: '🧠', l: 'MCU/module', s: 'antenna at the board edge' }, { i: '⏸️', l: 'Decoupling caps', s: 'hugging each power pin' }, { i: '🛣️', l: 'Then route', s: 'power first, then signals' } ], tilesFlow: true },
+
+    { t: 'Trace width', chip: 'road size',
+      h: 'Wider roads for heavier traffic.',
+      kid: 'A footpath is fine for walkers. Trucks need a highway.',
+      body: `<p>Thin traces carrying lots of current heat up. Use a calculator based on IPC-2221 (like the one here or LCSC's).{{lcsc_tw}}</p>
+             <p>Practical defaults for small boards: <b>~0.25 mm</b> for signals, <b>0.5 mm+</b> for power, and wider for motors/high current. Never go below your factory's minimum. Check their capabilities page.{{jlc_cap}}</p>`,
+      widget: 'trace' },
+
+    { t: 'Ground plane', chip: 'the big road home',
+      h: 'Pour a ground plane: a giant shared road back home.',
+      kid: 'A huge parking lot everyone can drive back across, instead of one narrow lane home.',
+      body: `<p>Every signal's current has to <b>return</b> to ground. On a 2-layer board, make the bottom layer an (almost) unbroken copper pour connected to GND. Return currents then flow right under their signal, which keeps noise low.</p>
+             <ul class="list-disc pl-5 space-y-1"><li>Don't slice the plane with long bottom-layer traces.</li><li>Decoupling: pin → cap → via straight to the GND plane, all short.{{cad_dec}}</li><li>Scatter GND vias ("stitching") around the board.</li></ul>`,
+      compare: { good: { t: 'Do', items: ['solid GND pour on the bottom', 'short decoupling loops', 'GND stitching vias'] },
+                 bad: { t: "Don't", items: ['ground plane cut into islands', 'decoupling cap 2 cm away', 'long thin GND traces instead of a plane'] } } },
+
+    { t: 'DRC & rules', chip: 'final checks',
+      h: 'DRC checks your board against the factory\'s rules.',
+      kid: 'A building inspector checking every door is wide enough before people move in.',
+      body: `<p><b>Design Rules Check</b> catches traces too close together, too thin, or unconnected. Set the rules to your factory's minimums first.{{jlc_cap}} KiCad 10 even has a graphical DRC rule editor.{{kicad10}}</p>
+             <p>Then go through the <a class="underline" href="../reference/pcb-checklist.html">PCB checklist</a> by hand.</p>`,
+      compare: { good: { t: 'Before you call it done', items: ['DRC: 0 errors', 'all ratsnest lines routed', 'ESP32 antenna keep-out free of copper', 'mounting holes + labels + pin 1 marks', '3D view looks sane'] },
+                 bad: { t: 'Red flags', items: ['thin power traces', 'copper under the module antenna', 'unlabelled connectors', 'parts touching the board edge'] } } },
+  ],
+  quiz: [
+    { q: 'What do you do first in a layout?', o: ['routing', 'placement', 'silkscreen'], a: 1, why: 'Placement decides how easy (and how good) routing will be.' },
+    { q: 'A good default for the bottom layer of a 2-layer board:', o: ['solid ground pour', 'random signal traces', 'empty bare fibreglass'], a: 0, why: 'An unbroken GND plane gives every signal a short, quiet return path.' },
+    { q: 'Vias are…', o: ['tiny surface resistors', 'solder mask openings', 'holes linking layers'], a: 2, why: 'Plated holes that connect copper on different layers.' },
+    { q: 'Under an ESP32 module\'s antenna you should…', o: ['keep copper away', 'pour ground under', 'route traces through'], a: 0, why: 'Copper near the antenna detunes it. Follow the module datasheet keep-out.' },
+  ],
+  build: {
+    h: 'Lay out your first board.',
+    need: 'KiCad, your led-board project with footprints (lessons 16–17)',
+    steps: [
+      'Open the PCB editor → "Update PCB from Schematic".',
+      'Draw a board outline (Edge.Cuts) of about 30 × 20 mm.',
+      'Place the connector at an edge, then R and LED. Add 2 mounting holes.',
+      'Set rules: 0.25 mm min trace, 0.2 mm clearance (check your factory). Route signal 0.3 mm, power 0.5 mm.',
+      'Bottom layer: add a GND copper zone. Press B to fill.',
+      'Run DRC → 0 errors. Open the 3D viewer. Screenshot and show me!',
+    ],
+  },
+  cards: [
+    { name: 'Layout rules', sub: 'the 2-layer starter set', color: 'bg-sky', use: 'every first board.',
+      rules: 'place before route · connectors on edges · decoupling hugging pins · GND plane on bottom · signals ~0.25 mm, power ≥ 0.5 mm (calculate) · antenna keep-out · DRC 0 errors. {{lcsc_tw}}' },
+  ],
+  source: { title: 'SparkFun: PCB Basics', url: 'https://learn.sparkfun.com/tutorials/pcb-basics', note: 'Then finish the board part of the KiCad Getting Started tutorial.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>

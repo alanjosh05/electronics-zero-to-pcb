@@ -1,0 +1,60 @@
+/* Shared look for the electronics course. Pairs with theme.js (Tailwind). */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+
+html, body { background: #f4ebe0; color: #1d1b18; font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; }
+body { -webkit-font-smoothing: antialiased; }
+
+/* dotted drafting-paper behind diagrams */
+.grid-paper {
+  background-color: #f9f2e8;
+  background-image: radial-gradient(#d6ccbe 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* chunky card with the hard "pop" shadow */
+.pop-card { background: #f8f0e6; border: 1.5px solid #46413b; border-radius: 12px; box-shadow: 1.5px 2.5px 0 #1d1b18; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .55rem 1rem; border: 1.5px solid #1d1b18; border-radius: 10px;
+  background: #f8f0e6; box-shadow: 1.5px 2.5px 0 #1d1b18; font-weight: 700; font-size: .85rem;
+  transition: transform .08s, box-shadow .08s; cursor: pointer;
+}
+.btn:hover { transform: translate(-1px, -1px); box-shadow: 2.5px 3.5px 0 #1d1b18; }
+.btn:active { transform: translate(1px, 1px); box-shadow: 0 0 0 #1d1b18; }
+.btn[disabled] { opacity: .35; pointer-events: none; }
+.btn-primary { background: #d0683a; color: #fff8f0; }
+
+.chip { display: inline-block; padding: .1rem .5rem; border: 1px solid #1d1b18; border-radius: 999px; font-size: .7rem; font-weight: 700; letter-spacing: .02em; }
+
+.kid { background: #e8efd9; border: 1px dashed #7fc278; border-radius: 10px; padding: .7rem .9rem; }
+.kid::before { content: "like you're 6 → "; font-weight: 800; color: #2a7a3d; }
+
+.term { font-weight: 800; background: linear-gradient(transparent 60%, #fcdcbd 60%); }
+
+a.cite { color: #1f63a0; text-decoration: underline; text-decoration-style: dotted; font-size: .75em; vertical-align: super; }
+a { text-underline-offset: 3px; }
+
+input[type=range] { accent-color: #d0683a; width: 100%; }
+
+svg { overflow: visible; }
+.pop-card.grid-paper { background-color: #f9f2e8; background-image: radial-gradient(#d6ccbe 1px, transparent 1px); background-size: 18px 18px; }
+
+/* moving charge "dots" along an SVG path */
+.flow { stroke-dasharray: 2 14; stroke-linecap: round; animation: flow calc(var(--speed, 1.2s) * 3) linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -96; } }
+.flow.off { animation: none; opacity: 0; }
+
+.glow { filter: drop-shadow(0 0 var(--glow, 6px) #ff5a3c); }
+
+/* one step visible at a time (stepper.js); print shows everything */
+[data-step] { display: none; }
+[data-step].active { display: grid; animation: rise .25s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media print {
+  [data-step] { display: grid !important; break-inside: avoid; margin-bottom: 2rem; }
+  .no-print { display: none !important; }
+  .flow { animation: none; }
+  html, body { background: #fff; }
+}

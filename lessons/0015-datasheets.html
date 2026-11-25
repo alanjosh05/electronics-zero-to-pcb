@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>15 · Reading a Datasheet</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body class="min-h-screen"><div id="app"></div>
+<script src="../assets/course.js"></script>
+<script>
+window.LESSON = {
+  n: 15,
+  steps: [
+    { t: 'The truth', chip: 'why',
+      h: "The datasheet is the part's instruction manual, and the final word.",
+      kid: 'The label on a medicine bottle: how much, how often, and what you must never do.',
+      body: `<p>Every chip has a datasheet from its maker. Tutorials, forums and this course give you typical values, but the datasheet of <b>the exact part you buy</b> wins every argument.{{dk_ds}}</p>
+             <p>They look scary (often 30–100 pages), but you only need a few sections to design with a part. The first page gives an overview; real designs need you to dig further.{{dk_ds}}</p>`,
+      tiles: [ { i: '📄', l: 'Page 1', s: 'features & summary' }, { i: '🚫', l: 'Absolute max', s: 'the cliff edge' }, { i: '✅', l: 'Recommended / electrical', s: 'where to live' }, { i: '📐', l: 'Pinout & package', s: 'which leg is which' }, { i: '🧩', l: 'Typical application', s: 'the circuit to copy' }, { i: '📏', l: 'Land pattern', s: 'footprint for your PCB' } ] },
+
+    { t: 'Abs max vs recommended', chip: 'the cliff',
+      h: 'Absolute maximum = the cliff edge. Recommended conditions = the road.',
+      kid: 'A bridge sign says "max 10 tons". That doesn\'t mean you drive a 10-ton truck over it every day.',
+      body: `<p><b>Absolute maximum ratings</b> are stress limits. Go past them and the part may be permanently damaged. They are <b>not</b> operating conditions.{{dk_ds}}</p>
+             <p><b>Recommended operating conditions</b> (and the electrical characteristics table) are where the part actually meets its specs. Design to live comfortably inside them.</p>
+             <p>You've seen this already: Uno pin = 40 mA absolute max, ~20 mA comfortable.{{ard_uno}}</p>`,
+      compare: { good: { t: 'Design here', items: ['recommended supply range', 'typical current with margin', 'temperatures in range'] },
+                 bad: { t: 'Never here', items: ['"it\'s rated 6 V abs max, so 5.9 V is fine"', 'designing to the abs-max current', 'ignoring thermal limits'] } } },
+
+    { t: 'The five numbers', chip: 'your checklist',
+      h: 'For any new part, pull out five things before you draw it.',
+      kid: 'Before a sleepover you check five things: when, where, bedtime, allergies, pickup time.',
+      body: `<ol class="list-decimal pl-5 space-y-2">
+               <li><b>Supply voltage range</b>: will it run on my 3.3 V?</li>
+               <li><b>Current</b>: how much does it draw / can it deliver?</li>
+               <li><b>Logic levels</b> (V<sub>IH</sub>/V<sub>IL</sub>): will my pins be understood? (lesson 13)</li>
+               <li><b>Pinout + package</b>: which leg is which, and which footprint (lesson 17)?</li>
+               <li><b>Typical application circuit</b>: which caps/resistors go around it?</li></ol>`,
+      tiles: [ { i: '⚡', l: 'Supply range', s: 'e.g. 3.0–3.6 V' }, { i: '💧', l: 'Current', s: 'typ / max' }, { i: '🔤', l: 'V<sub>IH</sub> / V<sub>IL</sub>', s: 'logic thresholds' }, { i: '📐', l: 'Pinout', s: 'top or bottom view?' } ] },
+
+    { t: 'Steal the circuit', chip: 'the shortcut',
+      h: 'Copy the "typical application" circuit. That\'s what pros do.',
+      kid: 'When you bake a cake for the first time, you follow the recipe on the box exactly.',
+      body: `<p>Manufacturers show exactly which capacitors, resistors and connections a chip needs. Regulators list required input/output caps, and microcontroller modules show reset/boot circuits. Start from that, then adapt.</p>
+             <p><b>Classic gotchas:</b></p>
+             <ul class="list-disc pl-5 space-y-1"><li>Pinout drawn from the <b>bottom</b> view, not the top.</li><li>"Typical" values aren't guaranteed. Use min/max for design.</li><li>Different suffixes (‑3.3, ‑TR, ‑ND) can mean different voltage, packaging or package.</li></ul>`,
+      compare: { good: { t: 'Do', items: ['start from the typical application', 'read the notes under each table', 'download the datasheet for the exact part number'] },
+                 bad: { t: "Don't", items: ['trust a random module\'s pin labels blindly', 'assume all "AMS1117"s are identical', 'skip the pinout view label'] } } },
+  ],
+  quiz: [
+    { q: 'You should design a circuit to run within…', o: ['absolute maximum ratings', 'recommended operating conditions', 'typical graph values'], a: 1, why: 'Abs max is the damage line. Recommended conditions are where specs are guaranteed.' },
+    { q: 'Which caps does a regulator need? Look in the…', o: ['absolute maximum table', 'ordering information page', 'typical application circuit'], a: 2, why: 'The typical application shows the exact surrounding parts and values.' },
+    { q: 'A classic pinout gotcha is…', o: ['top or bottom view', 'paper or screen view', 'colour or grey print'], a: 0, why: 'Some drawings show the part from underneath, which mirrors the pins.' },
+    { q: 'V<sub>IH</sub> tells you…', o: ['maximum current into the pin', 'minimum voltage read as HIGH', 'highest supply voltage it survives'], a: 1, why: 'V<sub>IH</sub> = input HIGH threshold: anything above it is read as a 1.' },
+  ],
+  build: {
+    h: 'Make three "part cards" from real datasheets.',
+    need: 'internet, a notes app or paper',
+    steps: [
+      'Download the datasheet of the AMS1117 (regulator). Find: input range, dropout, required caps.',
+      'Download the AO3400A (MOSFET). Find: V<sub>GS(th)</sub>, R<sub>DS(on)</sub> at 2.5 V and 4.5 V, max drain current, package.',
+      'Download the ESP32-S3-WROOM-1 module datasheet. Find: supply range, peak current, the reference schematic, antenna keep-out.',
+      'For each: write the five numbers on one card.',
+      'Compare what you found with this course\'s lessons. Anything different? Trust the datasheet, and tell me!',
+    ],
+    note: 'Get datasheets from the manufacturer or a big distributor (LCSC, DigiKey, Mouser), not random PDF sites.',
+  },
+  cards: [
+    { name: 'Datasheet checklist', sub: 'five numbers', color: 'bg-violet', use: 'before adding ANY new part to a schematic.',
+      rules: 'supply range · current · V<sub>IH</sub>/V<sub>IL</sub> · pinout + package (check view) · typical application circuit · design inside recommended, never at abs max. {{dk_ds}}' },
+  ],
+  source: { title: 'DigiKey Maker.io: How to Read and Understand Technical Datasheets', url: 'https://www.digikey.com/en/maker/tutorials/2024/how-to-read-and-understand-technical-datasheets', note: 'A walk-through of every section of a real datasheet. ~20 min.' },
+};
+</script>
+<script src="../assets/lesson.js"></script><script src="../assets/stepper.js"></script><script src="../assets/quiz.js"></script><script src="../assets/widgets.js"></script>
+</body>
+</html>
